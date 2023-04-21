@@ -1,5 +1,11 @@
 ### Install docker-color-output
 ```
+wget 
+```
+
+
+### Install docker-color-output
+```
 cp docker-color-output-linux-amd64 /usr/local/bin/docker-color-ouput
 chmod +x /usr/local/bin/docker-color-ouput
 ```
