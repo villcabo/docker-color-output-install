@@ -11,10 +11,10 @@ di() {
     docker images "$@" | docker-color-output
 }
 dl() {
-    docker logs -f "$@" | docker-color-output
+    docker logs -f "$@"
 }
 dlt() {
-    docker logs --tail 50 -f "$@" | docker-color-output
+    docker logs --tail 500 -f "$@"
 }
 
 # ==============================================================
@@ -24,10 +24,10 @@ dc() {
     docker compose "$@"
 }
 dcl() {
-    docker compose logs -f "$@" | docker-color-output
+    docker compose logs -f "$@"
 }
 dclt() {
-    docker compose logs --tail 100 -f "$@" | docker-color-output
+    docker compose logs --tail 500 -f "$@"
 }
 dcps() {
     docker compose ps "$@" | docker-color-output
