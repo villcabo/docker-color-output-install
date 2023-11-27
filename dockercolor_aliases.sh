@@ -4,8 +4,11 @@
 dps() {
     docker ps "$@" | docker-color-output
 }
-dpsf() {
-    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.Ports}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output
+dps1() {
+    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output
+}
+dpsports() {
+    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.Ports}}" "$@" | docker-color-output
 }
 di() {
     docker images "$@" | docker-color-output
@@ -13,8 +16,8 @@ di() {
 dl() {
     docker logs -f "$@"
 }
-dlt() {
-    docker logs --tail 500 -f "$@"
+dlt100() {
+    docker logs --tail 100 -f "$@"
 }
 
 # ==============================================================
@@ -26,8 +29,8 @@ dc() {
 dcl() {
     docker compose logs -f "$@"
 }
-dclt() {
-    docker compose logs --tail 500 -f "$@"
+dclt100() {
+    docker compose logs --tail 100 -f "$@"
 }
 dcps() {
     docker compose ps "$@" | docker-color-output
