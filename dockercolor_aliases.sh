@@ -16,8 +16,14 @@ di() {
 dl() {
     docker logs -f "$@"
 }
-dlt100() {
+dlt() {
     docker logs --tail 100 -f "$@"
+}
+dlt300() {
+    docker logs --tail 300 -f "$@"
+}
+dlt500() {
+    docker logs --tail 500 -f "$@"
 }
 
 # ==============================================================
@@ -26,12 +32,18 @@ dlt100() {
 dc() {
     docker compose "$@"
 }
+dcps() {
+    docker compose ps "$@" | docker-color-output
+}
 dcl() {
     docker compose logs -f "$@"
 }
-dclt100() {
+dclt() {
     docker compose logs --tail 100 -f "$@"
 }
-dcps() {
-    docker compose ps "$@" | docker-color-output
+dclt300() {
+    docker compose logs --tail 300 -f "$@"
+}
+dclt500() {
+    docker compose logs --tail 500 -f "$@"
 }
