@@ -10,3 +10,8 @@ wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main
 ```
 wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/install.sh | bash
 ```
+
+### Reload .bashrc
+```
+source ~/.bashrc
+```
