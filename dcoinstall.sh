@@ -4,7 +4,7 @@ echo "|--> Install docker-color-output <--|"
 echo "|-----------------------------------|"
 
 # Get the latest version URL from GitHub API
-LATEST_URL=$(curl -s https://api.github.com/repos/devemio/docker-color-output/releases/latest | grep "browser_download_url.*docker-color-output-linux-amd64" | cut -d '"' -f 4)
+LATEST_URL=https://github.com/devemio/docker-color-output/releases/latest/download/docker-color-output-linux-amd64
 
 # Remove old version
 rm -f /usr/bin/docker-color-output
