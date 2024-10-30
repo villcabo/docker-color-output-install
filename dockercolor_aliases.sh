@@ -5,13 +5,16 @@ dps() {
     docker ps "$@" | docker-color-output
 }
 dps1() {
-    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output
+    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output
 }
 dpsports() {
     docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.Ports}}" "$@" | docker-color-output
 }
 di() {
     docker images "$@" | docker-color-output
+}
+ds() {
+    docker stats "$@" | docker-color-output
 }
 dl() {
     docker logs -f "$@"
@@ -34,6 +37,9 @@ dc() {
 }
 dcps() {
     docker compose ps "$@" | docker-color-output
+}
+dcs() {
+    docker compose stats "$@" | docker-color-output
 }
 dcl() {
     docker compose logs -f "$@"
