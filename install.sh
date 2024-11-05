@@ -19,6 +19,7 @@ if [ $isInFile -eq 0 ]; then
     echo -e "\033[1m➔ Adding .docker_color_settings to $BASHRCFILE ⏳...\033[0m"
     echo '[[ -s "$HOME/.docker_color_settings" ]] && source "$HOME/.docker_color_settings"' >>$BASHRCFILE
     echo -e "\033[1m➔ .docker_color_settings successfull added to $BASHRCFILE ✔\033[0m"
+    echo -e "\033[1m    ➔ execute ➔ "source $BASHRCFILE"\033[0m"
 
 else
     echo -e "\033[1m➔ .docker_color_settings already exists in $BASHRCFILE ✔\033[0m"
