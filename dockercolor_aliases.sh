@@ -16,6 +16,9 @@ di() {
 ds() {
     docker stats "$@" | docker-color-output
 }
+ds1() {
+    docker stats --no-stream "$@" | docker-color-output
+}
 dl() {
     docker logs -f "$@"
 }
@@ -46,6 +49,9 @@ dcpsports() {
 }
 dcs() {
     docker compose stats "$@" | docker-color-output
+}
+dcs1() {
+    docker compose stats --no-stream "$@" | docker-color-output
 }
 dcl() {
     docker compose logs -f "$@"
