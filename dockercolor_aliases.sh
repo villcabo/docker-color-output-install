@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # ==============================================================
 # Docker
 # ==============================================================
@@ -54,10 +56,10 @@ dcps() {
     docker compose ps "$@" | docker-color-output
 }
 dcps1() {
-    docker compose ps --format "table {{.ID}}\\t{{.Names}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output
+    docker compose ps --format "table {{.Name}}\\t{{.Service}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output
 }
 dcpsports() {
-    docker compose ps --format "table {{.ID}}\\t{{.Names}}\\t{{.Ports}}" "$@" | docker-color-output
+    docker compose ps --format "table {{.Name}}\\t{{.Service}}\\t{{.Ports}}" "$@" | docker-color-output
 }
 dcs() {
     docker compose stats "$@" | docker-color-output
