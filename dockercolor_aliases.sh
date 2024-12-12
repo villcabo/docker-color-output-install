@@ -38,6 +38,18 @@ dlt500() {
 dc() {
     docker compose "$@"
 }
+dcup() {
+    docker compose up -d "$@"
+}
+dcuppull() {
+    docker compose up -d --pull always "$@"
+}
+dcupforce() {
+    docker compose up -d --force-recreate "$@"
+}
+dcuppullforce() {
+    docker compose up -d --pull always --force-recreate "$@"
+}
 dcps() {
     docker compose ps "$@" | docker-color-output
 }
