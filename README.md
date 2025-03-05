@@ -1,18 +1,30 @@
-### Install docker-color-output and settings aliases
+# Docker Color Output Install
 
-To run this command, you must be `root`
+Este documento proporciona instrucciones para instalar y configurar Docker Color Output.
+
+## Requisitos
+
+Para ejecutar estos comandos, debes tener privilegios de `root`.
+
+## Instalación
+
+Para instalar Docker Color Output, ejecuta el siguiente comando:
 
 ```bash
 wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker-color_installers.sh | bash
 ```
 
-### Install settings
+## Configuración de Alias
+
+Para instalar las configuraciones de alias, ejecuta el siguiente comando:
 
 ```bash
 wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker-color-aliases_installers.sh | bash
 ```
 
-### Reload .bashrc
+## Recargar .bashrc
+
+Después de la instalación, recarga tu archivo .bashrc para aplicar los cambios:
 
 ```bash
 source ~/.bashrc
