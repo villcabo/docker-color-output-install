@@ -2,13 +2,9 @@
 
 Este documento proporciona instrucciones para instalar y configurar Docker Color Output.
 
-## Requisitos
-
-Para ejecutar estos comandos, debes tener privilegios de `root`.
-
 ## Instalación
 
-Para instalar Docker Color Output, ejecuta el siguiente comando:
+Para instalar Docker Color Output, ejecuta el siguiente comando, solo para este comando debes tener privilegios de `root`:
 
 ```bash
 wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker-color_installers.sh | bash
