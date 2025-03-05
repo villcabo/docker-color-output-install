@@ -20,6 +20,7 @@ GITHUB_RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/mai
 
 # Paths
 BASHRC_FILE="$HOME/.bashrc"
+ZSHRC_FILE="$HOME/.zshrc"
 DOCKER_COLOR_OUTPUT_FILE="$HOME/.docker_color_settings"
 
 # Function to display usage
@@ -67,14 +68,26 @@ else
     exit 1
 fi
 
-# Check if settings are already in .bashrc
-if grep -q '[[ -s "$HOME/.docker_color_settings" ]] && source "$HOME/.docker_color_settings"' "$BASHRC_FILE"; then
-    echo -e "${YELLOW}${BOLD}➔ Docker Color Output settings already exist in $BASHRC_FILE${NORMAL}"
-else
-    # Add settings to .bashrc
-    echo -e "${BOLD}➔ Adding Docker Color Output settings to $BASHRC_FILE ⏳...${NORMAL}"
-    echo '[[ -s "$HOME/.docker_color_settings" ]] && source "$HOME/.docker_color_settings"' >> "$BASHRC_FILE"
-    
-    echo -e "${GREEN}${BOLD}➔ Docker Color Output settings added to $BASHRC_FILE${NORMAL}"
-    echo -e "${YELLOW}${BOLD}➔ To apply changes, run: ${ITALIC}source $BASHRC_FILE${NORMAL}"
+# Function to add settings to shell configuration file
+add_settings_to_shell() {
+    local shell_rc_file=$1
+    if grep -q '[[ -s "$HOME/.docker_color_settings" ]] && source "$HOME/.docker_color_settings"' "$shell_rc_file"; then
+        echo -e "${YELLOW}${BOLD}➔ Docker Color Output settings already exist in $shell_rc_file${NORMAL}"
+        echo -e "${BLUE}${BOLD}➔ To apply changes, run: ${ITALIC}source $shell_rc_file${NORMAL}"
+    else
+        echo -e "${BOLD}➔ Adding Docker Color Output settings to $shell_rc_file ⏳...${NORMAL}"
+        echo '[[ -s "$HOME/.docker_color_settings" ]] && source "$HOME/.docker_color_settings"' >> "$shell_rc_file"
+        echo -e "${GREEN}${BOLD}➔ Docker Color Output settings added to $shell_rc_file${NORMAL}"
+        echo -e "${BLUE}${BOLD}➔ To apply changes, run: ${ITALIC}source $shell_rc_file${NORMAL}"
+    fi
+}
+
+# Add settings to .bashrc if it exists
+if [ -f "$BASHRC_FILE" ]; then
+    add_settings_to_shell "$BASHRC_FILE"
+fi
+
+# Add settings to .zshrc if it exists
+if [ -f "$ZSHRC_FILE" ]; then
+    add_settings_to_shell "$ZSHRC_FILE"
 fi
