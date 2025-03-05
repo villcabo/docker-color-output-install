@@ -73,12 +73,12 @@ add_settings_to_shell() {
     local shell_rc_file=$1
     if grep -q '[[ -s "$HOME/.docker_color_settings" ]] && source "$HOME/.docker_color_settings"' "$shell_rc_file"; then
         echo -e "${YELLOW}${BOLD}➔ Docker Color Output settings already exist in $shell_rc_file${NORMAL}"
-        echo -e "${BLUE}${BOLD}➔ To apply changes, run: ${ITALIC}source $shell_rc_file${NORMAL}"
+        echo -e "${BOLD}➔ To apply changes, run: ${BLUE}${BOLD}${ITALIC}source $shell_rc_file${NORMAL}"
     else
         echo -e "${BOLD}➔ Adding Docker Color Output settings to $shell_rc_file ⏳...${NORMAL}"
         echo '[[ -s "$HOME/.docker_color_settings" ]] && source "$HOME/.docker_color_settings"' >> "$shell_rc_file"
         echo -e "${GREEN}${BOLD}➔ Docker Color Output settings added to $shell_rc_file${NORMAL}"
-        echo -e "${BLUE}${BOLD}➔ To apply changes, run: ${ITALIC}source $shell_rc_file${NORMAL}"
+        echo -e "${BOLD}➔ To apply changes, run: ${BLUE}${BOLD}${ITALIC}source $shell_rc_file${NORMAL}"
     fi
 }
 
