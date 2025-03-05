@@ -4,22 +4,22 @@
 # Docker
 # ==============================================================
 dps() {
-    docker ps "$@" | docker-color-output
+    docker ps "$@" | docker-color-output -s
 }
 dps1() {
-    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output
+    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output -s
 }
 dpsports() {
-    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.Ports}}" "$@" | docker-color-output
+    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.Ports}}" "$@" | docker-color-output -s
 }
 di() {
-    docker images "$@" | docker-color-output
+    docker images "$@" | docker-color-output -s
 }
 ds() {
-    docker stats "$@" | docker-color-output
+    docker stats "$@" | docker-color-output -s
 }
 ds1() {
-    docker stats --no-stream "$@" | docker-color-output
+    docker stats --no-stream "$@" | docker-color-output -s
 }
 dl() {
     docker logs -f "$@"
@@ -53,19 +53,19 @@ dcuppullforce() {
     docker compose up -d --pull always --force-recreate "$@"
 }
 dcps() {
-    docker compose ps "$@" | docker-color-output
+    docker compose ps "$@" | docker-color-output -s
 }
 dcps1() {
-    docker compose ps --format "table {{.Name}}\\t{{.Service}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output
+    docker compose ps --format "table {{.Name}}\\t{{.Service}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output -s
 }
 dcpsports() {
-    docker compose ps --format "table {{.Name}}\\t{{.Service}}\\t{{.Ports}}" "$@" | docker-color-output
+    docker compose ps --format "table {{.Name}}\\t{{.Service}}\\t{{.Ports}}" "$@" | docker-color-output -s
 }
 dcs() {
-    docker compose stats "$@" | docker-color-output
+    docker compose stats "$@" | docker-color-output -s
 }
 dcs1() {
-    docker compose stats --no-stream "$@" | docker-color-output
+    docker compose stats --no-stream "$@" | docker-color-output -s
 }
 dcl() {
     docker compose logs -f "$@"
