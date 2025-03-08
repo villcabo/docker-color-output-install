@@ -6,8 +6,16 @@ Este documento proporciona instrucciones para instalar y configurar Docker Color
 
 Para instalar Docker Color Output, ejecuta el siguiente comando, solo para este comando debes tener privilegios de `root`:
 
+Para versiones de docker 28 hacia arriba utilize:
+
 ```bash
 wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker-color_installers.sh | bash
+```
+
+Para versiones de docker menores a la 28 utilize este:
+
+```bash
+wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker-color_installers.sh | bash -s -- -v 2.5.1
 ```
 
 ## Configuración de Alias
