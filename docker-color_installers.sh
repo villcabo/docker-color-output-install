@@ -56,7 +56,7 @@ if [[ "$VERSION" == "latest" ]]; then
     LATEST_URL="https://github.com/devemio/docker-color-output/releases/latest/download/docker-color-output-linux-amd64"
     echo -e "${BOLD}➔ Downloading ${ITALIC}latest${QUIT_ITALIC} version ⏳...${NORMAL}"
 else
-    LATEST_URL="https://github.com/devemio/docker-color-output/releases/download/v${VERSION}/docker-color-output-linux-amd64"
+    LATEST_URL="https://github.com/devemio/docker-color-output/releases/download/${VERSION}/docker-color-output-linux-amd64"
     echo -e "${BOLD}➔ Downloading ${ITALIC}${VERSION}${QUIT_ITALIC} version ⏳...${NORMAL}"
 fi
 
