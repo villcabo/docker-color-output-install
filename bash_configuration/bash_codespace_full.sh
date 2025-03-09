@@ -182,6 +182,10 @@ system_info() {
 
   # System load
   echo -e "${CYAN}Load:${RESET} $(cat /proc/loadavg | cut -d' ' -f1-3)"
+
+  # Direcciones IP
+  echo -e "${WHITE}IP Local:${RESET} $(hostname -I | awk '{print $1}')"
+  echo -e "${WHITE}IP Pública:${RESET} $(curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me)"
   echo ""
 }
 
