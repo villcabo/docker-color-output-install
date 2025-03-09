@@ -2,25 +2,25 @@
 
 ## Instalación
 
-**Configuracion Basica**
+**Basic**
 
 ```bash
 cp ~/.bashrc ~/.bashrc.backup && wget -q -O ~/.bashrc https://raw.githubusercontent.com/villcabo/docker-color-output-install/main/bash_configuration/bash_basic.sh && source ~/.bashrc
 ```
 
-**Configuracion Full**
+**Full**
 
 ```bash
 cp ~/.bashrc ~/.bashrc.backup && wget -q -O ~/.bashrc https://raw.githubusercontent.com/villcabo/docker-color-output-install/main/bash_configuration/bash_full.sh && source ~/.bashrc
 ```
 
-**Configuracion Codespace**
+**Codespace Basic**
 
 ```bash
 cp ~/.bashrc ~/.bashrc.backup && wget -q -O ~/.bashrc https://raw.githubusercontent.com/villcabo/docker-color-output-install/main/bash_configuration/bash_codespace.sh && source ~/.bashrc
 ```
 
-**Configuracion Codespace Full**
+**Codespace Full**
 
 ```bash
 cp ~/.bashrc ~/.bashrc.backup && wget -q -O ~/.bashrc https://raw.githubusercontent.com/villcabo/docker-color-output-install/main/bash_configuration/bash_codespace_full.sh && source ~/.bashrc
