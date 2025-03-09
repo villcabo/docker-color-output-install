@@ -25,13 +25,13 @@ Para instalar Docker Color Output, ejecuta el siguiente comando, solo para este 
 **Para versiones de docker 28 hacia arriba utilize:**
 
 ```bash
-wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker-color_installers.sh | bash
+wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker_configuration/docker-color_installers.sh | bash
 ```
 
 **Para versiones de docker menores a la 28 utilize este:**
 
 ```bash
-wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker-color_installers.sh | bash -s -- -v 2.5.1
+wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker_configuration/docker-color_installers.sh | bash -s -- -v 2.5.1
 ```
 
 ## Configuración de Alias
@@ -39,13 +39,13 @@ wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main
 Para instalar las configuraciones de alias, ejecuta el siguiente comando:
 
 ```bash
-wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker-color-aliases_installers.sh | bash
+wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker_configuration/docker-color-aliases_installers.sh | bash
 ```
 
 Con recarga de bash
 
 ```bash
-wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker-color-aliases_installers.sh | bash && source ~/.bashrc
+wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker_configuration/docker-color-aliases_installers.sh | bash && source ~/.bashrc
 ```
 ## Recargar .bashrc o .zshrc
 
