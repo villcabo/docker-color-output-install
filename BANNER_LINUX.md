@@ -1,6 +1,8 @@
 # BANNER CONFIGURATION
 
-Puede utilizar este sitio para generar texto: [Pretty Text](https://patorjk.com/software/taag/#p=display&f=Doom&t=YOUR%20SERVER%0ANAME)
+Puede utilizar este sitio para generar texto:
+- [Doom](https://patorjk.com/software/taag/#p=display&f=Doom&t=YOUR%20SERVER%0ANAME)
+- [Big](https://patorjk.com/software/taag/#p=display&f=Big&t=YOUR%20SERVER%0ANAME)
 
 Modifique el archivo **motd**
 
