@@ -192,6 +192,7 @@ system_info() {
 
   # Direcciones IP
   printf "${WHITE}%-10s :${RESET} %s\n" "IP Local" "$(hostname -I | awk '{print $1}')"
+  printf "${WHITE}%-10s :${RESET} %s\n" "IP Publica" "$(curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me)"
   # System and kernel
   printf "${BLUE}%-10s :${RESET} %s %s\n" "System" "$(uname -o)" "$(uname -m)"
   printf "${RED}%-10s :${RESET} %s\n" "Kernel" "$(uname -r)"
