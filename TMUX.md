@@ -5,7 +5,7 @@
 Instalacion configuration de **TMUX**
 
 ```bash
-wget https://raw.githubusercontent.com/villcabo/docker-color-output-install/main/tmux_configuration/tmux.conf -O ~/.tmux.conf
+wget -q https://raw.githubusercontent.com/villcabo/docker-color-output-install/main/tmux_configuration/tmux.conf -O ~/.tmux.conf
 ```
 
 Tmux Plugin Manager **TPM**
