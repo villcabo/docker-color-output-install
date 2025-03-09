@@ -23,10 +23,6 @@ HISTFILESIZE=2000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-#shopt -s globstar
-
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
@@ -165,6 +161,12 @@ fi
 
 # Define default editor
 export EDITOR=vim
+
+# Improve terminal experience
+shopt -s autocd   # Change to a directory by simply typing its name
+shopt -s cdspell  # Autocorrect minor typos in cd commands
+shopt -s dirspell # Autocorrect typos in directory names during autocompletion
+shopt -s globstar # Enable ** pattern to match all files and directories recursively
 
 # Additional useful aliases
 alias free='free -h'
