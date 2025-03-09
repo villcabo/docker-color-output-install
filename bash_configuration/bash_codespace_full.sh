@@ -176,8 +176,31 @@ alias du='du -h'
 alias ports='netstat -tulanp'                                            # Shows open ports
 alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me' # Shows public IP
 alias myiplocal='hostname -I | awk "{print \$1}"'                        # Shows local IP
+alias clearhistory='history -c && history -w'                            # Clear history
 alias path='echo -e ${PATH//:/\\n}'                                      # Shows PATH in separate lines
 alias weather='curl wttr.in'                                             # Shows current weather (requires internet connection)
+
+# Function to easily extract compressed files
+extract() {
+  if [ -f $1 ]; then
+    case $1 in
+    *.tar.bz2) tar xjf $1 ;;
+    *.tar.gz) tar xzf $1 ;;
+    *.bz2) bunzip2 $1 ;;
+    *.rar) unrar e $1 ;;
+    *.gz) gunzip $1 ;;
+    *.tar) tar xf $1 ;;
+    *.tbz2) tar xjf $1 ;;
+    *.tgz) tar xzf $1 ;;
+    *.zip) unzip $1 ;;
+    *.Z) uncompress $1 ;;
+    *.7z) 7z x $1 ;;
+    *) echo "'$1' cannot be extracted via extract()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
 
 # System information at terminal startup
 system_info() {

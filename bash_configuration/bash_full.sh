@@ -93,10 +93,12 @@ fi
 alias free='free -h'
 alias df='df -h'
 alias du='du -h'
-alias ports='netstat -tulanp'                                            # Show open ports
-alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me' # Show public IP
-alias path='echo -e ${PATH//:/\\n}'                                      # Show PATH in separate lines
-alias weather='curl wttr.in'                                             # Show current weather (requires internet connection)
+alias ports='netstat -tulanp'                                            # Shows open ports
+alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me' # Shows public IP
+alias myiplocal='hostname -I | awk "{print \$1}"'                        # Shows local IP
+alias clearhistory='history -c && history -w'                            # Clear history
+alias path='echo -e ${PATH//:/\\n}'                                      # Shows PATH in separate lines
+alias weather='curl wttr.in'                                             # Shows current weather (requires internet connection)
 
 # History with date and time
 export HISTTIMEFORMAT="%d/%m/%y %T "
