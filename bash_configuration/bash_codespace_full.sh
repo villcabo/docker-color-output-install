@@ -174,6 +174,7 @@ alias df='df -h'
 alias du='du -h'
 alias ports='netstat -tulanp'                                            # Shows open ports
 alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me' # Shows public IP
+alias mylocalip='hostname -I | awk "{print \$1}"'                        # Shows local IP
 alias path='echo -e ${PATH//:/\\n}'                                      # Shows PATH in separate lines
 alias weather='curl wttr.in'                                             # Shows current weather (requires internet connection)
 
@@ -205,4 +206,5 @@ system_info() {
   echo ""
 }
 
-system_info
+alias sinfo='system_info'
+#system_info
