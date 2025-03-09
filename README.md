@@ -1,3 +1,19 @@
+# Bash Configuration
+
+## Instalación
+
+**Configuracion Basica**
+
+```bash
+cp ~/.bashrc ~/.bashrc.backup && wget -q -O ~/.bashrc https://raw.githubusercontent.com/villcabo/docker-color-output-install/main/bash_configuration/bash_basic.sh && source ~/.bashrc
+```
+
+**Configuracion Avanzada**
+
+```bash
+cp ~/.bashrc ~/.bashrc.backup && wget -q -O ~/.bashrc https://raw.githubusercontent.com/villcabo/docker-color-output-install/main/bash_configuration/bash_full.sh && source ~/.bashrc
+```
+
 # Docker Color Output Install
 
 Este documento proporciona instrucciones para instalar y configurar Docker Color Output.
@@ -31,10 +47,11 @@ Con recarga de bash
 ```bash
 wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker-color-aliases_installers.sh | bash && source ~/.bashrc
 ```
-## Recargar .bashrc
+## Recargar .bashrc o .zshrc
 
 Después de la instalación, recarga tu archivo .bashrc para aplicar los cambios:
 
 ```bash
 source ~/.bashrc
+source ~/.zshrc
 ```

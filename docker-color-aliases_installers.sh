@@ -19,7 +19,7 @@ SETTINGS_FILE_PATH="docker-color_aliases.sh"
 GITHUB_RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${SETTINGS_FILE_PATH}"
 
 # Paths
-BASHRC_FILE="$HOME/.bashrc"
+BASH_ALIASES_FILE="$HOME/.bash_aliases"
 ZSHRC_FILE="$HOME/.zshrc"
 DOCKER_COLOR_OUTPUT_FILE="$HOME/.docker_color_settings"
 
@@ -34,20 +34,29 @@ usage() {
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        -u|--url)
+            if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+                DOWNLOAD_URL=$2
+                shift 2
+            else
+                echo -e "${RED}${BOLD}➔ Error: Argument for $1 is missing${NORMAL}"
+                exit 1
+            fi
+            ;;
         -h|--help)
             usage
             exit 0
             ;;
         *)
-            log "error" "Unknown option: $1"
+            echo -e "${RED}${BOLD}➔ Unknown option: $1${NORMAL}"
             usage
             exit 1
             ;;
     esac
 done
 
-# Determine the URL to download from
-DOWNLOAD_URL=${GITHUB_RAW_URL}
+# Set default download URL if not specified
+DOWNLOAD_URL=${DOWNLOAD_URL:-$GITHUB_RAW_URL}
 
 # Start installation process
 echo -e "${BOLD}➔ Setting up Docker Color Output settings ⏳...${NORMAL}"
@@ -82,12 +91,31 @@ add_settings_to_shell() {
     fi
 }
 
-# Add settings to .bashrc if it exists
-if [ -f "$BASHRC_FILE" ]; then
-    add_settings_to_shell "$BASHRC_FILE"
+# Create .bash_aliases if it doesn't exist
+if [ ! -f "$BASH_ALIASES_FILE" ]; then
+    echo -e "${BOLD}➔ Creating ${ITALIC}$BASH_ALIASES_FILE${QUIT_ITALIC} file ⏳...${NORMAL}"
+    touch "$BASH_ALIASES_FILE"
+    echo -e "${GREEN}${BOLD}➔ Created ${ITALIC}$BASH_ALIASES_FILE${QUIT_ITALIC} file${NORMAL}"
+    
+    # Ensure .bash_aliases is sourced from .bashrc if it's not already
+    BASHRC_FILE="$HOME/.bashrc"
+    if [ -f "$BASHRC_FILE" ] && ! grep -q "if \[ -f ~/.bash_aliases \]; then" "$BASHRC_FILE"; then
+        echo -e "${BOLD}➔ Adding .bash_aliases inclusion to .bashrc ⏳...${NORMAL}"
+        echo '
+# Alias definitions
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi' >> "$BASHRC_FILE"
+        echo -e "${GREEN}${BOLD}➔ Added .bash_aliases inclusion to .bashrc${NORMAL}"
+    fi
 fi
+
+# Add settings to .bash_aliases
+add_settings_to_shell "$BASH_ALIASES_FILE"
 
 # Add settings to .zshrc if it exists
 if [ -f "$ZSHRC_FILE" ]; then
     add_settings_to_shell "$ZSHRC_FILE"
 fi
+
+echo -e "${GREEN}${BOLD}➔ Docker Color Output installation completed successfully ✅${NORMAL}"
