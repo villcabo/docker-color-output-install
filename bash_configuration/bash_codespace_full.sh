@@ -91,10 +91,6 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
@@ -102,6 +98,14 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 if [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases
+fi
+
+if [ -d "$HOME/.local/bin" ]; then
+  PATH="$HOME/.local/bin:$PATH"
+fi
+
+if [ -d "$HOME/bin" ]; then
+  PATH="$HOME/bin:$PATH"
 fi
 
 # enable programmable completion features (you don't need to enable
@@ -159,6 +163,18 @@ if [[ "$TERM" == "xterm" ]]; then
   PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }precmd"
 fi
 
+# Define default editor
+export EDITOR=vim
+
+# Additional useful aliases
+alias free='free -h'
+alias df='df -h'
+alias du='du -h'
+alias ports='netstat -tulanp'                                            # Shows open ports
+alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me' # Shows public IP
+alias path='echo -e ${PATH//:/\\n}'                                      # Shows PATH in separate lines
+alias weather='curl wttr.in'                                             # Shows current weather (requires internet connection)
+
 # System information at terminal startup
 system_info() {
   # Colors
@@ -171,6 +187,8 @@ system_info() {
   local WHITE="\033[1;37m"
   local RESET="\033[0m"
 
+  # Direcciones IP
+  echo -e "${WHITE}IP Local:${RESET} $(hostname -I | awk '{print $1}')"
   # System and kernel
   echo -e "${BLUE}System:${RESET} $(uname -o) $(uname -m)"
   echo -e "${RED}Kernel:${RESET} $(uname -r)"
@@ -182,10 +200,6 @@ system_info() {
 
   # System load
   echo -e "${CYAN}Load:${RESET} $(cat /proc/loadavg | cut -d' ' -f1-3)"
-
-  # Direcciones IP
-  echo -e "${WHITE}IP Local:${RESET} $(hostname -I | awk '{print $1}')"
-  echo -e "${WHITE}IP Pública:${RESET} $(curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me)"
   echo ""
 }
 

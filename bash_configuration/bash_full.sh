@@ -5,11 +5,11 @@
 
 # Configuración de colores para prompt según usuario (root/no-root)
 if [ $(id -u) -eq 0 ]; then
-    # Usuario root - prompt en rojo
-    PS1='\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+  # Usuario root - prompt en rojo
+  PS1='\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
-    # Usuario normal - prompt en verde
-    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+  # Usuario normal - prompt en verde
+  PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 fi
 
 # Configuración para dircolors (colores en ls)
@@ -31,17 +31,17 @@ alias egrep='egrep --color=auto'
 # alias mv='mv -i'
 
 # Añadir directorios bin al PATH si existen
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
+if [ -d "$HOME/.local/bin" ]; then
+  PATH="$HOME/.local/bin:$PATH"
 fi
 
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
+if [ -d "$HOME/bin" ]; then
+  PATH="$HOME/bin:$PATH"
 fi
 
 # Cargar aliases personalizados si existe el archivo
 if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+  . ~/.bash_aliases
 fi
 
 # Definir editor predeterminado
@@ -58,7 +58,7 @@ alias .....='cd ../../../..'
 
 # Función para crear un directorio y entrar en él
 mkcd() {
-    mkdir -p "$1" && cd "$1"
+  mkdir -p "$1" && cd "$1"
 }
 
 # Historial: no guardar comandos duplicados y comandos que empiecen con espacio
@@ -75,10 +75,10 @@ shopt -s histappend
 shopt -s checkwinsize
 
 # Mejorar la experiencia de la terminal
-shopt -s autocd      # Cambiar a un directorio con solo escribir su nombre
-shopt -s cdspell     # Autocorregir errores tipográficos menores en cd
-shopt -s dirspell    # Autocorregir errores tipográficos en nombres de directorios durante autocompletado
-shopt -s globstar    # Habilitar patrón ** para que coincida con todos los archivos y directorios recursivamente
+shopt -s autocd   # Cambiar a un directorio con solo escribir su nombre
+shopt -s cdspell  # Autocorregir errores tipográficos menores en cd
+shopt -s dirspell # Autocorregir errores tipográficos en nombres de directorios durante autocompletado
+shopt -s globstar # Habilitar patrón ** para que coincida con todos los archivos y directorios recursivamente
 
 # Habilitar autocompletado si está disponible
 if ! shopt -oq posix; then
@@ -94,37 +94,37 @@ alias update='sudo apt update && sudo apt upgrade'
 alias free='free -h'
 alias df='df -h'
 alias du='du -h'
-alias top='htop'  # Requiere instalar htop: sudo apt install htop
-alias ports='netstat -tulanp'  # Muestra puertos abiertos
-alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me'  # Muestra IP pública
-alias clearhistory='history -c && history -w'  # Limpia el historial
-alias path='echo -e ${PATH//:/\\n}'  # Muestra PATH en líneas separadas
-alias weather='curl wttr.in'  # Muestra el clima actual (requiere conexión a internet)
+alias top='htop'                                                         # Requiere instalar htop: sudo apt install htop
+alias ports='netstat -tulanp'                                            # Muestra puertos abiertos
+alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me' # Muestra IP pública
+alias clearhistory='history -c && history -w'                            # Limpia el historial
+alias path='echo -e ${PATH//:/\\n}'                                      # Muestra PATH en líneas separadas
+alias weather='curl wttr.in'                                             # Muestra el clima actual (requiere conexión a internet)
 
 # Historial con fecha y hora
 export HISTTIMEFORMAT="%d/%m/%y %T "
 
 # Función para buscar en el historial
 function hg() {
-    history | grep "$1"
+  history | grep "$1"
 }
 
 # Función para extraer archivos comprimidos fácilmente
 extract() {
-  if [ -f $1 ] ; then
+  if [ -f $1 ]; then
     case $1 in
-      *.tar.bz2)   tar xjf $1     ;;
-      *.tar.gz)    tar xzf $1     ;;
-      *.bz2)       bunzip2 $1     ;;
-      *.rar)       unrar e $1     ;;
-      *.gz)        gunzip $1      ;;
-      *.tar)       tar xf $1      ;;
-      *.tbz2)      tar xjf $1     ;;
-      *.tgz)       tar xzf $1     ;;
-      *.zip)       unzip $1       ;;
-      *.Z)         uncompress $1  ;;
-      *.7z)        7z x $1        ;;
-      *)           echo "'$1' no puede ser extraído mediante extract()" ;;
+    *.tar.bz2) tar xjf $1 ;;
+    *.tar.gz) tar xzf $1 ;;
+    *.bz2) bunzip2 $1 ;;
+    *.rar) unrar e $1 ;;
+    *.gz) gunzip $1 ;;
+    *.tar) tar xf $1 ;;
+    *.tbz2) tar xjf $1 ;;
+    *.tgz) tar xzf $1 ;;
+    *.zip) unzip $1 ;;
+    *.Z) uncompress $1 ;;
+    *.7z) 7z x $1 ;;
+    *) echo "'$1' no puede ser extraído mediante extract()" ;;
     esac
   else
     echo "'$1' no es un archivo válido"
@@ -143,6 +143,9 @@ system_info() {
   local WHITE="\033[1;37m"
   local RESET="\033[0m"
 
+  # Direcciones IP
+  echo -e "${WHITE}IP Local:${RESET} $(hostname -I | awk '{print $1}')"
+
   # Sistema y kernel
   echo -e "${BLUE}Sistema:${RESET} $(uname -o) $(uname -m)"
   echo -e "${RED}Kernel:${RESET} $(uname -r)"
@@ -154,10 +157,6 @@ system_info() {
 
   # Carga del sistema
   echo -e "${CYAN}Carga:${RESET} $(cat /proc/loadavg | cut -d' ' -f1-3)"
-
-  # Direcciones IP
-  echo -e "${WHITE}IP Local:${RESET} $(hostname -I | awk '{print $1}')"
-  echo -e "${WHITE}IP Pública:${RESET} $(curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me)"
   echo ""
 }
 
