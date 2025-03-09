@@ -142,18 +142,22 @@ system_info() {
   local CYAN="\033[1;36m"
   local WHITE="\033[1;37m"
   local RESET="\033[0m"
-  
+
   # Sistema y kernel
   echo -e "${BLUE}Sistema:${RESET} $(uname -o) $(uname -m)"
   echo -e "${RED}Kernel:${RESET} $(uname -r)"
   echo -e "${GREEN}Uptime:${RESET} $(uptime -p | sed 's/up //')"
-  
+
   # Uso de memoria y disco
   echo -e "${YELLOW}Memoria:${RESET} $(free -h | awk '/^Mem:/ {print $3 " de " $2 " usado"}')"
   echo -e "${PURPLE}Disco:${RESET} $(df -h --output=used,size / | awk 'NR==2 {print $1 " de " $2 " usado"}')"
-  
+
   # Carga del sistema
   echo -e "${CYAN}Carga:${RESET} $(cat /proc/loadavg | cut -d' ' -f1-3)"
+
+  # Direcciones IP
+  echo -e "${WHITE}IP Local:${RESET} $(hostname -I | awk '{print $1}')"
+  echo -e "${WHITE}IP Pública:${RESET} $(curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me)"
   echo ""
 }
 
