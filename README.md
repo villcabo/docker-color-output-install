@@ -65,5 +65,8 @@ Después de la instalación, recarga tu archivo .bashrc para aplicar los cambios
 
 ```bash
 source ~/.bashrc
+```
+
+```bash
 source ~/.zshrc
 ```
