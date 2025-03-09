@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 REPO_OWNER="villcabo"
 REPO_NAME="docker-color-output"
 SETTINGS_FILE_PATH="docker-color_aliases.sh"
-GITHUB_RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${SETTINGS_FILE_PATH}"
+GITHUB_RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/docker_configuration/${SETTINGS_FILE_PATH}"
 
 # Paths
 BASH_ALIASES_FILE="$HOME/.bash_aliases"
@@ -34,15 +34,6 @@ usage() {
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        -u|--url)
-            if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
-                DOWNLOAD_URL=$2
-                shift 2
-            else
-                echo -e "${RED}${BOLD}➔ Error: Argument for $1 is missing${NORMAL}"
-                exit 1
-            fi
-            ;;
         -h|--help)
             usage
             exit 0
@@ -56,7 +47,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Set default download URL if not specified
-DOWNLOAD_URL=${DOWNLOAD_URL:-$GITHUB_RAW_URL}
+DOWNLOAD_URL=$GITHUB_RAW_URL
 
 # Start installation process
 echo -e "${BOLD}➔ Setting up Docker Color Output settings ⏳...${NORMAL}"
@@ -96,18 +87,6 @@ if [ ! -f "$BASH_ALIASES_FILE" ]; then
     echo -e "${BOLD}➔ Creating ${ITALIC}$BASH_ALIASES_FILE${QUIT_ITALIC} file ⏳...${NORMAL}"
     touch "$BASH_ALIASES_FILE"
     echo -e "${GREEN}${BOLD}➔ Created ${ITALIC}$BASH_ALIASES_FILE${QUIT_ITALIC} file${NORMAL}"
-    
-    # Ensure .bash_aliases is sourced from .bashrc if it's not already
-    BASHRC_FILE="$HOME/.bashrc"
-    if [ -f "$BASHRC_FILE" ] && ! grep -q "if \[ -f ~/.bash_aliases \]; then" "$BASHRC_FILE"; then
-        echo -e "${BOLD}➔ Adding .bash_aliases inclusion to .bashrc ⏳...${NORMAL}"
-        echo '
-# Alias definitions
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi' >> "$BASHRC_FILE"
-        echo -e "${GREEN}${BOLD}➔ Added .bash_aliases inclusion to .bashrc${NORMAL}"
-    fi
 fi
 
 # Add settings to .bash_aliases
