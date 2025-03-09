@@ -14,6 +14,12 @@ cp ~/.bashrc ~/.bashrc.backup && wget -q -O ~/.bashrc https://raw.githubusercont
 cp ~/.bashrc ~/.bashrc.backup && wget -q -O ~/.bashrc https://raw.githubusercontent.com/villcabo/docker-color-output-install/main/bash_configuration/bash_full.sh && source ~/.bashrc
 ```
 
+**Configuracion Codespace**
+
+```bash
+cp ~/.bashrc ~/.bashrc.backup && wget -q -O ~/.bashrc https://raw.githubusercontent.com/villcabo/docker-color-output-install/main/bash_configuration/bash_codespace.sh && source ~/.bashrc
+```
+
 # Docker Color Output Install
 
 Este documento proporciona instrucciones para instalar y configurar Docker Color Output.
