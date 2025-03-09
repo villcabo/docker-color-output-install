@@ -203,5 +203,4 @@ system_info() {
   echo ""
 }
 
-# Uncomment to show system information at terminal startup
 system_info
