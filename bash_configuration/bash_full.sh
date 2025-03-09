@@ -158,22 +158,4 @@ system_info() {
 }
 
 # Descomentar para mostrar información del sistema al iniciar la terminal
-# system_info
-
-# Mejoras para git
-if [ -f /usr/lib/git-core/git-sh-prompt ]; then
-  . /usr/lib/git-core/git-sh-prompt
-  export GIT_PS1_SHOWDIRTYSTATE=1
-  export GIT_PS1_SHOWSTASHSTATE=1
-  export GIT_PS1_SHOWUNTRACKEDFILES=1
-  
-  # Añadir información de git al prompt si estamos en un repositorio
-  PS1_original=$PS1
-  if [ $(id -u) -eq 0 ]; then
-    # Usuario root - prompt en rojo
-    PS1='\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 " (%s)")\$ '
-  else
-    # Usuario normal - prompt en verde
-    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 " (%s)")\$ '
-  fi
-fi
+system_info
