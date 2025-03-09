@@ -188,18 +188,18 @@ system_info() {
   local RESET="\033[0m"
 
   # Direcciones IP
-  echo -e "${WHITE}IP Local:${RESET} $(hostname -I | awk '{print $1}')"
+  printf "${WHITE}%-10s :${RESET} %s\n" "IP Local" "$(hostname -I | awk '{print $1}')"
   # System and kernel
-  echo -e "${BLUE}System:${RESET} $(uname -o) $(uname -m)"
-  echo -e "${RED}Kernel:${RESET} $(uname -r)"
-  echo -e "${GREEN}Uptime:${RESET} $(uptime -p | sed 's/up //')"
+  printf "${BLUE}%-10s :${RESET} %s %s\n" "System" "$(uname -o)" "$(uname -m)"
+  printf "${RED}%-10s :${RESET} %s\n" "Kernel" "$(uname -r)"
+  printf "${GREEN}%-10s :${RESET} %s\n" "Uptime" "$(uptime -p | sed 's/up //')"
 
   # Memory and disk usage
-  echo -e "${YELLOW}Memory:${RESET} $(free -h | awk '/^Mem:/ {print $3 " of " $2 " used"}')"
-  echo -e "${PURPLE}Disk:${RESET} $(df -h --output=used,size / | awk 'NR==2 {print $1 " of " $2 " used"}')"
+  printf "${YELLOW}%-10s :${RESET} %s\n" "Memory" "$(free -h | awk '/^Mem:/ {print $3 " of " $2 " used"}')"
+  printf "${PURPLE}%-10s :${RESET} %s\n" "Disk" "$(df -h --output=used,size / | awk 'NR==2 {print $1 " of " $2 " used"}')"
 
   # System load
-  echo -e "${CYAN}Load:${RESET} $(cat /proc/loadavg | cut -d' ' -f1-3)"
+  printf "${CYAN}%-10s :${RESET} %s\n" "Load" "$(cat /proc/loadavg | cut -d' ' -f1-3)"
   echo ""
 }
 
