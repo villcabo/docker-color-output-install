@@ -218,7 +218,7 @@ system_info() {
   local RESET="\033[0m"
 
   # Separator for better visualization
-  echo -e "${GRAY}╭─────────────────────── SYSTEM INFORMATION ───────────────────────╮${RESET}"
+  echo -e "${GRAY}╭───────────────────────── SYSTEM INFORMATION ─────────────────────────╮${RESET}"
 
   # Current date and time
   printf "${WHITE}%-12s :${RESET} %s\n" "Date/Time" "$(date '+%Y-%m-%d %H:%M:%S')"
@@ -289,13 +289,13 @@ system_info() {
 
   # Last logins
   printf "${GRAYBOLD}%-12s :${RESET}\n" "Last logins"
-  printf "${GRAY}%-12s\n" "────────────────────────────────────────────────────────────────────"
+  printf "${GRAY}%-12s\n" " ────────────────────────────────────────────────────────────────────── "
   printf "${GRAY}%-12s %-20s %-15s %-15s\n" "  User" "   Date and Time" "  Origin" "     IP"
-  printf "${GRAY}%-12s\n" "────────────────────────────────────────────────────────────────────"
+  printf "${GRAY}%-12s\n" " ────────────────────────────────────────────────────────────────────── "
   last -a | head -5 | awk '{printf "  %-12s  %-20s  %-15s  %-15s\n", $1, $4" "$5" "$6" "$7, $3, $10}'
 
   # Final separator
-  echo -e "${GRAY}╰──────────────────────────────────────────────────────────────────╯${RESET}"
+  echo -e "${GRAY}╰──────────────────────────────────────────────────────────────────────╯${RESET}"
   echo ""
 }
 
