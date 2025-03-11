@@ -213,40 +213,41 @@ system_info() {
   local CYAN="\033[1;36m"
   local WHITE="\033[1;37m"
   local ORANGE="\033[1;33m"
+  local GRAYBOLD="\033[1;37m"
   local GRAY="\033[0;37m"
   local RESET="\033[0m"
 
-  # Separador para mejor visualización
-  echo -e "${GRAY}╭───────────────────── INFORMACIÓN DEL SISTEMA ─────────────────────╮${RESET}"
+  # Separator for better visualization
+  echo -e "${GRAY}╭─────────────────────── SYSTEM INFORMATION ───────────────────────╮${RESET}"
 
-  # Fecha y hora actual
-  printf "${WHITE}%-12s :${RESET} %s\n" "Fecha/Hora" "$(date '+%Y-%m-%d %H:%M:%S')"
+  # Current date and time
+  printf "${WHITE}%-12s :${RESET} %s\n" "Date/Time" "$(date '+%Y-%m-%d %H:%M:%S')"
 
-  # Usuario y hostname
-  printf "${PURPLE}%-12s :${RESET} %s\n" "Usuario" "$(whoami)@$(cat /etc/hostname)"
+  # User and hostname
+  printf "${PURPLE}%-12s :${RESET} %s\n" "User" "$(whoami)@$(cat /etc/hostname)"
 
-  # Direcciones IP
-  printf "${WHITE}%-12s :${RESET} %s\n" "IP Local" "$(hostname -I | awk '{print $1}')"
+  # IP addresses
+  printf "${WHITE}%-12s :${RESET} %s\n" "Local IP" "$(hostname -I | awk '{print $1}')"
 
-  # Sistema y kernel
-  printf "${BLUE}%-12s :${RESET} %s %s\n" "Sistema" "$(uname -o)" "$(uname -m)"
+  # System and kernel
+  printf "${BLUE}%-12s :${RESET} %s %s\n" "System" "$(uname -o)" "$(uname -m)"
 
-  # Distribución (si existe el archivo)
+  # Distribution (if the file exists)
   if [ -f /etc/os-release ]; then
     DISTRO=$(grep -w "PRETTY_NAME" /etc/os-release | cut -d= -f2 | tr -d '"')
-    printf "${BLUE}%-12s :${RESET} %s\n" "Distribución" "$DISTRO"
+    printf "${BLUE}%-12s :${RESET} %s\n" "Distribution" "$DISTRO"
   fi
 
   printf "${RED}%-12s :${RESET} %s\n" "Kernel" "$(uname -r)"
   printf "${GREEN}%-12s :${RESET} %s\n" "Uptime" "$(uptime -p | sed 's/up //')"
 
-  # Información de CPU
+  # CPU information
   CPU_MODEL=$(grep -m 1 "model name" /proc/cpuinfo | cut -d: -f2 | sed 's/^ //g')
   CPU_CORES=$(grep -c "processor" /proc/cpuinfo)
   printf "${CYAN}%-12s :${RESET} %s\n" "CPU" "$CPU_MODEL"
   printf "${CYAN}%-12s :${RESET} %s\n" "CPU Cores" "$CPU_CORES"
 
-  # Temperatura de CPU (si sensors está instalado)
+  # CPU temperature (if sensors is installed)
   if command -v sensors &> /dev/null; then
     CPU_TEMP=$(sensors | grep -m 1 "Core 0" | awk '{print $3}')
     if [ ! -z "$CPU_TEMP" ]; then
@@ -254,42 +255,46 @@ system_info() {
     fi
   fi
 
-  # Memoria y uso de disco
-  printf "${YELLOW}%-12s :${RESET} %s\n" "Memoria" "$(free -h | awk '/^Mem:/ {print $3 " de " $2 " usado (" int($3/$2*100) "%)"}')"
-  printf "${YELLOW}%-12s :${RESET} %s\n" "Swap" "$(free -h | awk '/^Swap:/ {if ($2 == "0B") print "No disponible"; else print $3 " de " $2 " usado (" int($3/$2*100) "%)"}' 2>/dev/null || echo "No disponible")"
-  printf "${PURPLE}%-12s :${RESET} %s\n" "Disco (/) " "$(df -h --output=used,size,pcent / | awk 'NR==2 {print $1 " de " $2 " usado (" $3 ")"}')"
+  # Memory and disk usage
+  printf "${YELLOW}%-12s :${RESET} %s\n" "Memory" "$(free -h | awk '/^Mem:/ {print $3 " of " $2 " used (" int($3/$2*100) "%)"}')"
+  printf "${YELLOW}%-12s :${RESET} %s\n" "Swap" "$(free -h | awk '/^Swap:/ {if ($2 == "0B") print "Not available"; else print $3 " of " $2 " used (" int($3/$2*100) "%)"}' 2>/dev/null || echo "Not available")"
+  printf "${PURPLE}%-12s :${RESET} %s\n" "Disk (/) " "$(df -h --output=used,size,pcent / | awk 'NR==2 {print $1 " of " $2 " used (" $3 ")"}')"
 
-  # Carpeta home (si está en una partición separada)
+  # Home folder (if on a separate partition)
   if df -h | grep -q "/home"; then
-    printf "${PURPLE}%-12s :${RESET} %s\n" "Disco (/home)" "$(df -h --output=used,size,pcent /home | awk 'NR==2 {print $1 " de " $2 " usado (" $3 ")"}')"
+    printf "${PURPLE}%-12s :${RESET} %s\n" "Disk (/home)" "$(df -h --output=used,size,pcent /home | awk 'NR==2 {print $1 " of " $2 " used (" $3 ")"}')"
   fi
 
-  # Procesos
+  # Processes
   PROCESS_COUNT=$(ps aux | wc -l)
-  printf "${ORANGE}%-12s :${RESET} %s\n" "Procesos" "$((PROCESS_COUNT-1))"  # Restamos 1 por la cabecera
+  printf "${ORANGE}%-12s :${RESET} %s\n" "Processes" "$((PROCESS_COUNT-1))"  # Subtract 1 for the header
 
-  # Carga del sistema
-  printf "${CYAN}%-12s :${RESET} %s\n" "Carga" "$(cat /proc/loadavg | cut -d' ' -f1-3)"
+  # System load
+  printf "${CYAN}%-12s :${RESET} %s\n" "Load" "$(cat /proc/loadavg | cut -d' ' -f1-3)"
 
-  # Usuarios conectados
+  # Connected users
   USERS_ON=$(who | wc -l)
-  printf "${GREEN}%-12s :${RESET} %s\n" "Usuarios" "$USERS_ON conectados"
+  printf "${GREEN}%-12s :${RESET} %s\n" "Users" "$USERS_ON connected"
 
-  # Servicios (systemd)
+  # Services (systemd)
   if command -v systemctl &> /dev/null; then
     SERVICES_RUNNING=$(systemctl list-units --type=service --state=running | grep -c "\.service")
     SERVICES_FAILED=$(systemctl list-units --type=service --state=failed | grep -c "\.service")
-    printf "${RED}%-12s :${RESET} %s running, %s failed\n" "Servicios" "$SERVICES_RUNNING" "$SERVICES_FAILED"
+    printf "${RED}%-12s :${RESET} %s running, %s failed\n" "Services" "$SERVICES_RUNNING" "$SERVICES_FAILED"
   fi
 
-  # Información de red
+  # Network information
   CONNECTIONS=$(netstat -ant | grep ESTABLISHED | wc -l)
-  printf "${BLUE}%-12s :${RESET} %s establecidas\n" "Conexiones" "$CONNECTIONS"
+  printf "${BLUE}%-12s :${RESET} %s established\n" "Connections" "$CONNECTIONS"
 
-  # Últimos logins
-  printf "${GRAY}%-12s :${RESET}\n%s\n" "Últimos logins" "$(last -a | head -3 | awk '{printf "  %-12s  %-15s  %s\n", $1, $3, $5,$6,$7,$8,$9,$10}')"
+  # Last logins
+  printf "${GRAYBOLD}%-12s :${RESET}\n" "Last logins"
+  printf "${GRAY}%-12s\n" "────────────────────────────────────────────────────────────────────"
+  printf "${GRAY}%-12s %-20s %-15s %-15s\n" "  User" "   Date and Time" "  Origin" "     IP"
+  printf "${GRAY}%-12s\n" "────────────────────────────────────────────────────────────────────"
+  last -a | head -5 | awk '{printf "  %-12s  %-20s  %-15s  %-15s\n", $1, $4" "$5" "$6" "$7, $3, $10}'
 
-  # Separador final
+  # Final separator
   echo -e "${GRAY}╰──────────────────────────────────────────────────────────────────╯${RESET}"
   echo ""
 }
