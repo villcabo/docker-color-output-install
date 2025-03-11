@@ -21,4 +21,6 @@ Para recargar la configuracion, debe iniciar **tmux** y teclear **ctrl + A shit 
 tmux source ~/.tmux.conf
 ```
 
-Si desea ver mas temas puede ir al siguiente link [TMUX Themes](https://github.com/jimeh/tmux-themepack)
+Si desea customizar el tema vaya al siguiente link:
+- [Tokyo Night Tmux (DEFAULT)](https://github.com/janoamaral/tokyo-night-tmux?tab=readme-ov-file)
+- [Tokyo Night Tmux Theme](https://github.com/fabioluciano/tmux-tokyo-night?tab=readme-ov-file)
