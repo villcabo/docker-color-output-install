@@ -91,3 +91,15 @@ tmux source ~/.tmux.conf
 Si desea customizar el tema vaya al siguiente link:
 - [Tokyo Night Tmux (DEFAULT)](https://github.com/janoamaral/tokyo-night-tmux?tab=readme-ov-file)
 - [Tokyo Night Tmux Theme](https://github.com/fabioluciano/tmux-tokyo-night?tab=readme-ov-file)
+
+# BANNER CONFIGURATION
+
+Puede utilizar este sitio para generar texto:
+- [Doom](https://patorjk.com/software/taag/#p=display&f=Doom&t=YOUR%20SERVER%0ANAME)
+- [Big](https://patorjk.com/software/taag/#p=display&f=Big&t=YOUR%20SERVER%0ANAME)
+
+Modifique el archivo **motd**
+
+```bash
+vim /etc/motd
+```
