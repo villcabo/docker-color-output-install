@@ -2,9 +2,10 @@
 
 # Script para instalar node_exporter como servicio systemd
 # Uso:
-#   ./install_node_exporter.sh [-v versión] [--uninstall]
+#   ./install_node_exporter.sh [-v versión] [--uninstall] [--bin-only]
 #   Ejemplo: ./install_node_exporter.sh -v 1.9.0
 #   Ejemplo: ./install_node_exporter.sh --uninstall
+#   Ejemplo: ./install_node_exporter.sh --bin-only
 
 # Color codes for logging
 NORMAL='\033[0m'
@@ -23,6 +24,7 @@ VERSION="1.9.0"
 ARCH="linux-amd64"
 SERVICE_FILE="/etc/systemd/system/node-exporter.service"
 UNINSTALL=false
+BIN_ONLY=false
 
 # Función para mostrar ayuda
 mostrar_ayuda() {
@@ -32,11 +34,13 @@ mostrar_ayuda() {
     echo -e "  -h, --help       Muestra esta ayuda"
     echo -e "  -v, --version    Especifica la versión de node_exporter (default: 1.9.0)"
     echo -e "  --uninstall      Desinstala node_exporter"
+    echo -e "  --bin-only       Instala solo el binario de node_exporter"
     echo -e ""
     echo -e "${BOLD}Ejemplos:${NORMAL}"
     echo -e "  $0               Instala node_exporter v1.9.0"
     echo -e "  $0 -v 1.8.0      Instala node_exporter v1.8.0"
     echo -e "  $0 --uninstall   Desinstala node_exporter"
+    echo -e "  $0 --bin-only    Instala solo el binario de node_exporter"
     exit 0
 }
 
@@ -92,7 +96,59 @@ desinstalar_node_exporter() {
     exit 0
 }
 
-# Función para instalar node_exporter
+# Función para instalar solo el binario de node_exporter
+instalar_binario_node_exporter() {
+    DOWNLOAD_URL="https://github.com/prometheus/node_exporter/releases/download/v${VERSION}/node_exporter-${VERSION}.${ARCH}.tar.gz"
+    TEMP_DIR=$(mktemp -d)
+
+    echo -e "${BLUE}${BOLD}⚙️ Instalando binario de ${ITALIC}node_exporter v${VERSION}${QUIT_ITALIC} $(date "+%Y-%m-%d %H:%M:%S") ${NORMAL}"
+    echo
+
+    # Descargar el archivo
+    echo -e "${BOLD}➔ Descargando ${ITALIC}node_exporter${QUIT_ITALIC} desde ${UNDERLINE}${DOWNLOAD_URL}${NORMAL} ⏳..."
+    wget -q --show-progress -O "${TEMP_DIR}/node_exporter.tar.gz" "${DOWNLOAD_URL}"
+
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}${BOLD}✖ Error: No se pudo descargar node_exporter. Verifique la versión y su conexión a internet. $(date "+%Y-%m-%d %H:%M:%S") ${NORMAL}"
+        rm -rf "${TEMP_DIR}"
+        exit 1
+    fi
+    echo -e "${GREEN}${BOLD}✓ Descarga completada $(date "+%Y-%m-%d %H:%M:%S") ${NORMAL}"
+    echo
+
+    # Descomprimir el archivo
+    echo -e "${BOLD}➔ Descomprimiendo ${ITALIC}node_exporter${QUIT_ITALIC} ⏳...${NORMAL}"
+    tar -xzf "${TEMP_DIR}/node_exporter.tar.gz" -C "${TEMP_DIR}"
+    echo -e "${GREEN}${BOLD}✓ Descompresión completada $(date "+%Y-%m-%d %H:%M:%S") ${NORMAL}"
+    echo
+
+    # Eliminar el binario existente si existe
+    if [ -f "/usr/local/bin/node_exporter" ]; then
+        echo -e "${BOLD}➔ Eliminando binario ${ITALIC}/usr/local/bin/node_exporter${QUIT_ITALIC} existente ⏳...${NORMAL}"
+        rm -f /usr/local/bin/node_exporter
+        echo -e "${GREEN}${BOLD}✓ Binario eliminado $(date "+%Y-%m-%d %H:%M:%S") ${NORMAL}"
+        echo
+    fi
+
+    # Mover el binario a /usr/local/bin
+    echo -e "${BOLD}➔ Instalando binario en ${ITALIC}/usr/local/bin${QUIT_ITALIC} ⏳...${NORMAL}"
+    cp "${TEMP_DIR}/node_exporter-${VERSION}.${ARCH}/node_exporter" /usr/local/bin/
+    chmod +x /usr/local/bin/node_exporter
+    echo -e "${GREEN}${BOLD}✓ Binario instalado $(date "+%Y-%m-%d %H:%M:%S") ${NORMAL}"
+    echo
+
+    # Limpiar archivos temporales
+    echo -e "${BOLD}➔ Limpiando archivos temporales ⏳...${NORMAL}"
+    rm -rf "${TEMP_DIR}"
+    echo -e "${GREEN}${BOLD}✓ Archivos temporales eliminados $(date "+%Y-%m-%d %H:%M:%S") ${NORMAL}"
+    echo
+
+    echo -e "${GREEN}${BOLD}✅ Instalación de binario completada exitosamente $(date "+%Y-%m-%d %H:%M:%S") ${NORMAL}"
+    echo -e "${BLUE}${BOLD}ℹ️ Binario de Node Exporter v${VERSION} instalado en /usr/local/bin ${NORMAL}"
+    echo
+}
+
+# Función para instalar node_exporter completo
 instalar_node_exporter() {
     DOWNLOAD_URL="https://github.com/prometheus/node_exporter/releases/download/v${VERSION}/node_exporter-${VERSION}.${ARCH}.tar.gz"
     TEMP_DIR=$(mktemp -d)
@@ -230,6 +286,10 @@ while [[ $# -gt 0 ]]; do
             UNINSTALL=true
             shift
             ;;
+        --bin-only)
+            BIN_ONLY=true
+            shift
+            ;;
         *)
             echo -e "${RED}${BOLD}✖ Error: Opción desconocida: $1 $(date "+%Y-%m-%d %H:%M:%S") ${NORMAL}"
             mostrar_ayuda
@@ -240,6 +300,8 @@ done
 # Ejecutar la función correspondiente
 if [ "$UNINSTALL" = true ]; then
     desinstalar_node_exporter
+elif [ "$BIN_ONLY" = true ]; then
+    instalar_binario_node_exporter
 else
     instalar_node_exporter
 fi
