@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Color codes for logging
-NORMAL='\033[0m'
-BOLD='\033[1m'
-ITALIC='\033[3m'
-QUIT_ITALIC='\033[23m'
-UNDERLINE='\033[4m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+  # Color codes for logging
+  NORMAL='\033[0m'
+  BOLD='\033[1m'
+  ITALIC='\033[3m'
+  QUIT_ITALIC='\033[23m'
+  UNDERLINE='\033[4m'
+  GREEN='\033[0;32m'
+  YELLOW='\033[1;33m'
+  RED='\033[0;31m'
+  BLUE='\033[0;34m'
+  NC='\033[0m' # No Color
 
 # GitHub repository details
 REPO_OWNER="villcabo"
