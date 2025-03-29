@@ -41,16 +41,12 @@ dc() {
     docker compose "$@"
 }
 dcup() {
-    docker compose up -d "$@"
-}
-dcuppull() {
-    docker compose up -d --pull always "$@"
-}
-dcupforce() {
-    docker compose up -d --force-recreate "$@"
-}
-dcuppullforce() {
-    docker compose up -d --pull always --force-recreate "$@"
+    if [[ "$1" == "-f" ]]; then
+        shift
+        docker compose up -d --pull always --force-recreate "$@" && docker compose logs -f --tail 100 "$@"
+    else
+        docker compose up -d "$@"
+    fi
 }
 dcps() {
     docker compose ps "$@" | docker-color-output
