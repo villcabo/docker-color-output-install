@@ -41,11 +41,35 @@ dc() {
     docker compose "$@"
 }
 dcup() {
-    if [[ "$1" == "-f" ]]; then
-        shift
-        docker compose up -d --pull always --force-recreate "$@" && docker compose logs -f --tail 100 "$@"
-    else
-        docker compose up -d "$@"
+    local PULL=false
+    local FORCE=false
+    local LOGS=false
+    local OPTIND=1
+    local opts=""
+
+    # Procesar todas las opciones
+    while getopts "pfl" opt; do
+        case $opt in
+            p) PULL=true ;;
+            f) FORCE=true ;;
+            l) LOGS=true ;;
+            *) echo "Opción inválida: -$OPTARG" >&2; return 1 ;;
+        esac
+    done
+
+    # Saltar las opciones procesadas para obtener los argumentos restantes
+    shift $((OPTIND-1))
+
+    # Construir las opciones para docker compose
+    [[ "$PULL" == true ]] && opts+=" --pull always"
+    [[ "$FORCE" == true ]] && opts+=" --force-recreate"
+
+    # Ejecutar el comando docker compose up con las opciones correspondientes
+    eval "docker compose up -d$opts $*"
+
+    # Si se solicitaron logs, mostrarlos
+    if [[ "$LOGS" == true ]]; then
+        docker compose logs -f "$@"
     fi
 }
 dcps() {
