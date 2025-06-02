@@ -173,12 +173,12 @@ shopt -s globstar # Enable ** pattern to match all files and directories recursi
 alias free='free -h'
 alias df='df -h'
 alias du='du -h'
-alias ports='netstat -tulanp'                                            # Shows open ports
-alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me' # Shows public IP
-alias myiplocal='hostname -I | awk "{print \$1}"'                        # Shows local IP
-alias clearhistory='history -c && history -w'                            # Clear history
-alias path='echo -e ${PATH//:/\\n}'                                      # Shows PATH in separate lines
-alias weather='curl wttr.in'                                             # Shows current weather (requires internet connection)
+alias ports='netstat -tulanp'                                                  # Shows open ports
+alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me; echo' # Shows public IP
+alias myiplocal='hostname -I | awk "{print \$1}"'                              # Shows local IP
+alias clearhistory='history -c && history -w'                                  # Clear history
+alias path='echo -e ${PATH//:/\\n}'                                            # Shows PATH in separate lines
+alias weather='curl wttr.in'                                                   # Shows current weather (requires internet connection)
 
 # Function to easily extract compressed files
 extract() {
