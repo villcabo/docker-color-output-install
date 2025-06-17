@@ -259,11 +259,56 @@ _dcq_completion() {
     COMPREPLY=($(compgen -W "${services}" -- ${cur}))
 }
 
-# Registrar autocompletados
+# Autocompletado para aliases específicos
+_dcup_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local services=$(_get_compose_services)
+    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+}
+
+_dcdown_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local services=$(_get_compose_services)
+    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+}
+
+_dcl_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local services=$(_get_compose_services)
+    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+}
+
+_dcx_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local services=$(_get_compose_services)
+    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+}
+
+_dx_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local containers=$(_get_docker_containers)
+    COMPREPLY=($(compgen -W "${containers}" -- ${cur}))
+}
+
+_dl_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local containers=$(_get_docker_containers)
+    COMPREPLY=($(compgen -W "${containers}" -- ${cur}))
+}
+
+# Registrar autocompletados para funciones principales
 complete -F _d_completion d
 complete -F _dc_completion dc
 complete -F _dq_completion dq
 complete -F _dcq_completion dcq
+
+# Registrar autocompletados para aliases específicos
+complete -F _dcup_completion dcup
+complete -F _dcdown_completion dcdown
+complete -F _dcl_completion dcl
+complete -F _dcx_completion dcx
+complete -F _dx_completion dx
+complete -F _dl_completion dl
 
 # ==============================================================
 # Funciones de Ayuda
@@ -296,11 +341,8 @@ CONTROL:
   d kill             - Matar contenedor
 
 LIMPIEZA:
-  d prune, d pr            - Limpiar sistema
-  d prunea, d prf          - Limpiar todo (aggressive)
-  d pruneima, d pri        - Limpiar images
-  d prunenet, d prn        - Limpiar networks
-  d prunevol, d prv        - Limpiar volumes
+  d prune            - Limpiar sistema
+  d prunea           - Limpiar todo (aggressive)
 
 QUICK:
   dq PATTERN CMD     - Ejecutar en primer contenedor que coincida
