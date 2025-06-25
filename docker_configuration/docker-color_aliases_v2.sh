@@ -127,7 +127,7 @@ alias dl='d logs'
 alias dlt='d l100'
 alias dpri='d image prune'
 
-alias dcup='dc up'
+alias dcup='dc up   '
 alias dcps='dc ps'
 alias dcl='dc logs'
 alias dclt='dc l100'
@@ -230,17 +230,62 @@ _d_completion() {
 _dc_completion() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    local command=""
+    local has_flags=false
+
+    # Encontrar el comando principal (ignorando flags)
+    for ((i=1; i<COMP_CWORD; i++)); do
+        if [[ "${COMP_WORDS[i]}" != -* ]]; then
+            command="${COMP_WORDS[i]}"
+            break
+        fi
+    done
+
+    # Verificar si ya hay flags en la línea de comando
+    for ((i=1; i<COMP_CWORD; i++)); do
+        if [[ "${COMP_WORDS[i]}" == -* ]]; then
+            has_flags=true
+            break
+        fi
+    done
 
     if [[ ${COMP_CWORD} == 1 ]]; then
         # Primeros argumentos - subcomandos
         local commands="up u ul ps p ps1 p1 psp stats s s1 logs l l100 l300 l500 x sh bash down d start stop restart build b pull help h"
         COMPREPLY=($(compgen -W "${commands}" -- ${cur}))
+    elif [[ "$cur" == -* ]]; then
+        # Autocompletar flags para comandos que los soportan
+        case "$command" in
+            up|u|ul)
+                local flags="-p -l -f -b"
+                # Obtener flags ya usados para evitar duplicados
+                local used_flags=""
+                for ((i=1; i<COMP_CWORD; i++)); do
+                    if [[ "${COMP_WORDS[i]}" == -* ]]; then
+                        used_flags+="${COMP_WORDS[i]} "
+                    fi
+                done
+
+                # Filtrar flags ya usados
+                local available_flags=""
+                for flag in $flags; do
+                    if [[ ! "$used_flags" =~ $flag ]]; then
+                        available_flags+="$flag "
+                    fi
+                done
+
+                COMPREPLY=($(compgen -W "${available_flags}" -- ${cur}))
+                ;;
+        esac
     else
-        # Segundos argumentos - servicios
-        case "$prev" in
+        # Autocompletar servicios después de comandos y flags
+        case "$command" in
             x|sh|bash|logs|l|l100|l300|l500|start|stop|restart|up|u|ul|down|d|build|b)
-                local services=$(_get_compose_services)
-                COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+                # Solo completar servicios si no estamos completando un flag
+                if [[ "$prev" != -* ]] || [[ "$has_flags" == true ]]; then
+                    local services=$(_get_compose_services)
+                    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+                fi
                 ;;
         esac
     fi
@@ -254,13 +299,6 @@ _dq_completion() {
 }
 
 _dcq_completion() {
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local services=$(_get_compose_services)
-    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
-}
-
-# Autocompletado para aliases específicos
-_dcup_completion() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local services=$(_get_compose_services)
     COMPREPLY=($(compgen -W "${services}" -- ${cur}))
@@ -303,7 +341,7 @@ complete -F _dq_completion dq
 complete -F _dcq_completion dcq
 
 # Registrar autocompletados para aliases específicos
-complete -F _dcup_completion dcup
+complete -F _dc_completion dcup
 complete -F _dcdown_completion dcdown
 complete -F _dcl_completion dcl
 complete -F _dcx_completion dcx
@@ -360,22 +398,22 @@ _compose_help() {
 🐙 Docker Compose Helper (c)
 
 BÁSICOS:
-  dc up, c u          - Levantar servicios
+  dc up, dc u          - Levantar servicios
   dc up -p            - Up con pull
   dc up -f            - Up forzando recreación
   dc up -b            - Up con build
   dc ul               - Up + logs automáticos
-  dc down, c d        - Bajar servicios
+  dc down, dc d        - Bajar servicios
 
 ESTADO:
-  dc ps, c p          - Lista servicios
-  dc ps1, c p1        - Lista formato compacto
+  dc ps, dc p          - Lista servicios
+  dc ps1, dc p1        - Lista formato compacto
   dc psp              - Lista con puertos
 
 LOGS & STATS:
-  dc logs, c l        - Logs en tiempo real
+  dc logs, dc l        - Logs en tiempo real
   dc l100/l300/l500   - Logs con tail
-  dc stats, c s       - Stats en tiempo real
+  dc stats, dc s       - Stats en tiempo real
 
 EXEC:
   dc x SERVICE CMD    - Ejecutar comando
@@ -384,7 +422,7 @@ EXEC:
 
 CONTROL:
   dc start/stop/restart SERVICE
-  dc build, c b       - Build servicios
+  dc build, dc b       - Build servicios
   dc pull             - Pull imágenes
 
 QUICK:

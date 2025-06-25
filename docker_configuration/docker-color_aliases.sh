@@ -1,271 +1,445 @@
 #!/usr/bin/env bash
 
 # ==============================================================
-# Docker
+# Docker Aliases - Versión Mejorada y Simplificada
 # ==============================================================
-dps() {
-    docker ps "$@" | docker-color-output
-}
-dps1() {
-    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output
-}
-dpsports() {
-    docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.Ports}}" "$@" | docker-color-output
-}
-di() {
-    docker images "$@" | docker-color-output
-}
-ds() {
-    docker stats "$@" | docker-color-output
-}
-ds1() {
-    docker stats --no-stream "$@" | docker-color-output
-}
-dl() {
-    docker logs -f "$@"
-}
-dlt() {
-    docker logs --tail 100 -f "$@"
-}
-dlt300() {
-    docker logs --tail 300 -f "$@"
-}
-dlt500() {
-    docker logs --tail 500 -f "$@"
+
+# Función principal para docker con subcomandos
+d() {
+    case "$1" in
+        # Básicos
+        ps|p)     shift; docker ps "$@" | docker-color-output ;;
+        ps1|p1)   shift; docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output ;;
+        psp)      shift; docker ps --format "table {{.ID}}\\t{{.Names}}\\t{{.Ports}}" "$@" | docker-color-output ;;
+        images|i) shift; docker images "$@" | docker-color-output ;;
+
+        # Stats y logs
+        stats|s)  shift; docker stats "$@" | docker-color-output ;;
+        s1)       shift; docker stats --no-stream "$@" | docker-color-output ;;
+        logs|l)   shift; docker logs -f "$@" ;;
+        l100)     shift; docker logs --tail 100 -f "$@" ;;
+        l300)     shift; docker logs --tail 300 -f "$@" ;;
+        l500)     shift; docker logs --tail 500 -f "$@" ;;
+
+        # Exec (más simple)
+        x)        shift; docker exec -it "$@" ;;
+        sh)       shift; docker exec -it "$1" sh ;;
+        bash)     shift; docker exec -it "$1" bash ;;
+
+        # Control de contenedores
+        start)    shift; docker start "$@" ;;
+        stop)     shift; docker stop "$@" ;;
+        restart)  shift; docker restart "$@" ;;
+        rm)       shift; docker rm "$@" ;;
+        rmi)      shift; docker rmi "$@" ;;
+        kill)     shift; docker kill "$@" ;;
+
+        # Información
+        inspect)  shift; docker inspect "$@" ;;
+        top)      shift; docker top "$@" ;;
+
+        # Limpieza
+        prune|pr)    docker system prune -f ;;
+        prunea|prf)   docker system prune -af ;;
+        pruneima|pri) docker image prune -f ;;
+        prunevol|prv) docker volume prune -f ;;
+        prunenet|prn) docker network prune -f ;;
+
+        # Ayuda
+        help|h)   _docker_help ;;
+
+        # Por defecto, pasar comando directo a docker
+        *)        docker "$@" ;;
+    esac
 }
 
-# Nuevos alias para docker exec
-dex() {
-    docker exec -it "$@"
-}
-dexsh() {
-    docker exec -it "$1" sh
-}
-dexbash() {
-    docker exec -it "$1" bash
-}
-
-# Alias adicionales útiles
-drm() {
-    docker rm "$@"
-}
-drmi() {
-    docker rmi "$@"
-}
-dstop() {
-    docker stop "$@"
-}
-dstart() {
-    docker start "$@"
-}
-drestart() {
-    docker restart "$@"
-}
-dinspect() {
-    docker inspect "$@"
-}
-
-# ==============================================================
-# Docker Compose
-# ==============================================================
+# Función principal para docker compose con subcomandos
 dc() {
-    docker compose "$@"
+    case "$1" in
+        # Up con opciones inteligentes
+        up|u)
+            shift
+            local opts=""
+            local show_logs=false
+            while [[ $1 == -* ]]; do
+                case $1 in
+                    -p) opts+=" --pull always" ;;
+                    -f) opts+=" --force-recreate" ;;
+                    -b) opts+=" --build" ;;
+                    -l) show_logs=true ;;
+                esac
+                shift
+            done
+            eval "docker compose up -d$opts $*"
+            if [[ "$show_logs" == true ]]; then
+                docker compose logs -f "$@"
+            fi
+            ;;
+
+        # Up con logs automáticos
+        ul)       shift; docker compose up -d "$@" && docker compose logs -f "$@" ;;
+
+        # Básicos
+        ps|p)     shift; docker compose ps "$@" | docker-color-output ;;
+        ps1|p1)   shift; docker compose ps --format "table {{.Name}}\\t{{.Service}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output ;;
+        psp)      shift; docker compose ps --format "table {{.Name}}\\t{{.Service}}\\t{{.Ports}}" "$@" | docker-color-output ;;
+
+        # Stats y logs
+        stats|s)  shift; docker compose stats "$@" | docker-color-output ;;
+        s1)       shift; docker compose stats --no-stream "$@" | docker-color-output ;;
+        logs|l)   shift; docker compose logs --tail 100 -f "$@" ;;
+        l100)     shift; docker compose logs --tail 100 -f "$@" ;;
+        l300)     shift; docker compose logs --tail 300 -f "$@" ;;
+        l500)     shift; docker compose logs --tail 500 -f "$@" ;;
+
+        # Exec (más simple)
+        x)        shift; docker compose exec "$@" ;;
+        sh)       shift; docker compose exec "$1" sh ;;
+        bash)     shift; docker compose exec "$1" bash ;;
+
+        # Control de servicios
+        down|d)   shift; docker compose down "$@" ;;
+        start)    shift; docker compose start "$@" ;;
+        stop)     shift; docker compose stop "$@" ;;
+        restart)  shift; docker compose restart "$@" ;;
+
+        # Build y pull
+        build|b)  shift; docker compose build "$@" ;;
+        pull)     shift; docker compose pull "$@" ;;
+
+        # Ayuda
+        help|h)   _compose_help ;;
+
+        # Por defecto, pasar comando directo a docker compose
+        *)        docker compose "$@" ;;
+    esac
 }
-dcup() {
-    local PULL=false
-    local FORCE=false
-    local LOGS=false
-    local OPTIND=1
-    local opts=""
 
-    # Procesar todas las opciones
-    while getopts "pfl" opt; do
-        case $opt in
-            p) PULL=true ;;
-            f) FORCE=true ;;
-            l) LOGS=true ;;
-            *) echo "Opción inválida: -$OPTARG" >&2; return 1 ;;
-        esac
-    done
+# ==============================================================
+# Aliases cortos adicionales (backward compatibility)
+# ==============================================================
 
-    # Saltar las opciones procesadas para obtener los argumentos restantes
-    shift $((OPTIND-1))
+# Los más usados como aliases independientes
+alias dps='d ps'
+alias dps1='d ps1'
+alias di='d images'
+alias dl='d logs'
+alias dlt='d l100'
+alias dpri='d image prune'
 
-    # Construir las opciones para docker compose
-    [[ "$PULL" == true ]] && opts+=" --pull always"
-    [[ "$FORCE" == true ]] && opts+=" --force-recreate"
+alias dcup='dc up   '
+alias dcps='dc ps'
+alias dcl='dc logs'
+alias dclt='dc l100'
+alias dcdown='dc down'
 
-    # Ejecutar el comando docker compose up con las opciones correspondientes
-    eval "docker compose up -d$opts $*"
+# Exec shortcuts (muy comunes)
+alias dx='d x'
+alias dcx='dc x'
 
-    # Si se solicitaron logs, mostrarlos
-    if [[ "$LOGS" == true ]]; then
-        docker compose logs -f "$@"
+# ==============================================================
+# Smart Functions - Funciones Inteligentes
+# ==============================================================
+
+# Función para ejecutar comando en el primer contenedor que coincida
+dq() {
+    local container=$(docker ps --format "{{.Names}}" | grep -i "$1" | head -1)
+    if [[ -n "$container" ]]; then
+        echo "→ Ejecutando en: $container"
+        shift
+        docker exec -it "$container" "$@"
+    else
+        echo "❌ No se encontró contenedor que coincida con: $1"
+        return 1
     fi
 }
-dcps() {
-    docker compose ps "$@" | docker-color-output
-}
-dcps1() {
-    docker compose ps --format "table {{.Name}}\\t{{.Service}}\\t{{.RunningFor}}\\t{{.Status}}\\t{{.Image}}" "$@" | docker-color-output
-}
-dcpsports() {
-    docker compose ps --format "table {{.Name}}\\t{{.Service}}\\t{{.Ports}}" "$@" | docker-color-output
-}
-dcs() {
-    docker compose stats "$@" | docker-color-output
-}
-dcs1() {
-    docker compose stats --no-stream "$@" | docker-color-output
-}
-dcl() {
-    docker compose logs -f "$@"
-}
-dclt() {
-    docker compose logs --tail 100 -f "$@"
-}
-dclt300() {
-    docker compose logs --tail 300 -f "$@"
-}
-dclt500() {
-    docker compose logs --tail 500 -f "$@"
+
+# Función para ejecutar comando en el primer servicio que coincida
+dcq() {
+    if [[ ! -f docker-compose.yml ]] && [[ ! -f docker-compose.yaml ]] && [[ ! -f compose.yml ]] && [[ ! -f compose.yaml ]]; then
+        echo "❌ No hay archivo compose en este directorio"
+        return 1
+    fi
+
+    local service=$(docker compose ps --services | grep -i "$1" | head -1)
+    if [[ -n "$service" ]]; then
+        echo "→ Ejecutando en servicio: $service"
+        shift
+        docker compose exec "$service" "$@"
+    else
+        echo "❌ No se encontró servicio que coincida con: $1"
+        return 1
+    fi
 }
 
-# Nuevos alias para docker compose exec
-dcex() {
-    docker compose exec "$@"
-}
-dcexsh() {
-    docker compose exec "$1" sh
-}
-dcexbash() {
-    docker compose exec "$1" bash
+# Función para mostrar estado rápido
+dstatus() {
+    echo "=== CONTAINERS ==="
+    docker ps --format "table {{.Names}}\\t{{.Status}}\\t{{.Ports}}" | docker-color-output
+
+    if [[ -f docker-compose.yml ]] || [[ -f docker-compose.yaml ]] || [[ -f compose.yml ]] || [[ -f compose.yaml ]]; then
+        echo -e "\n=== COMPOSE SERVICES ==="
+        docker compose ps --format "table {{.Service}}\\t{{.Status}}\\t{{.Ports}}" | docker-color-output
+    fi
 }
 
-# Alias adicionales para docker compose
-dcdown() {
-    docker compose down "$@"
-}
-dcstop() {
-    docker compose stop "$@"
-}
-dcstart() {
-    docker compose start "$@"
-}
-dcrestart() {
-    docker compose restart "$@"
-}
-dcpull() {
-    docker compose pull "$@"
-}
-dcbuild() {
-    docker compose build "$@"
+# Función para limpiar todo de una vez
+dcleanup() {
+    echo "🧹 Limpiando Docker..."
+    docker system prune -f
+    docker volume prune -f
+    docker network prune -f
+    echo "✅ Limpieza completada"
 }
 
 # ==============================================================
-# Funciones de Autocompletado
+# Autocompletado Mejorado
 # ==============================================================
 
-# Función auxiliar para obtener nombres de contenedores
 _get_docker_containers() {
     docker ps --format "{{.Names}}" 2>/dev/null
 }
 
-# Función auxiliar para obtener nombres de servicios de compose
 _get_compose_services() {
     if [[ -f docker-compose.yml ]] || [[ -f docker-compose.yaml ]] || [[ -f compose.yml ]] || [[ -f compose.yaml ]]; then
         docker compose ps --services 2>/dev/null
     fi
 }
 
-# Autocompletado para comandos docker exec
-_docker_exec_completion() {
+# Autocompletado inteligente para función d()
+_d_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    if [[ ${COMP_CWORD} == 1 ]]; then
+        # Primeros argumentos - subcomandos
+        local commands="ps p ps1 p1 psp images i stats s s1 logs l l100 l300 l500 x sh bash start stop restart rm rmi kill inspect top prune prunea prunevol prunenet help h"
+        COMPREPLY=($(compgen -W "${commands}" -- ${cur}))
+    else
+        # Segundos argumentos - contenedores
+        case "$prev" in
+            x|sh|bash|logs|l|l100|l300|l500|start|stop|restart|rm|inspect|top)
+                local containers=$(_get_docker_containers)
+                COMPREPLY=($(compgen -W "${containers}" -- ${cur}))
+                ;;
+        esac
+    fi
+}
+
+# Autocompletado inteligente para función dc()
+_dc_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    local command=""
+    local has_flags=false
+
+    # Encontrar el comando principal (ignorando flags)
+    for ((i=1; i<COMP_CWORD; i++)); do
+        if [[ "${COMP_WORDS[i]}" != -* ]]; then
+            command="${COMP_WORDS[i]}"
+            break
+        fi
+    done
+
+    # Verificar si ya hay flags en la línea de comando
+    for ((i=1; i<COMP_CWORD; i++)); do
+        if [[ "${COMP_WORDS[i]}" == -* ]]; then
+            has_flags=true
+            break
+        fi
+    done
+
+    if [[ ${COMP_CWORD} == 1 ]]; then
+        # Primeros argumentos - subcomandos
+        local commands="up u ul ps p ps1 p1 psp stats s s1 logs l l100 l300 l500 x sh bash down d start stop restart build b pull help h"
+        COMPREPLY=($(compgen -W "${commands}" -- ${cur}))
+    elif [[ "$cur" == -* ]]; then
+        # Autocompletar flags para comandos que los soportan
+        case "$command" in
+            up|u|ul)
+                local flags="-p -l -f -b"
+                # Obtener flags ya usados para evitar duplicados
+                local used_flags=""
+                for ((i=1; i<COMP_CWORD; i++)); do
+                    if [[ "${COMP_WORDS[i]}" == -* ]]; then
+                        used_flags+="${COMP_WORDS[i]} "
+                    fi
+                done
+
+                # Filtrar flags ya usados
+                local available_flags=""
+                for flag in $flags; do
+                    if [[ ! "$used_flags" =~ $flag ]]; then
+                        available_flags+="$flag "
+                    fi
+                done
+
+                COMPREPLY=($(compgen -W "${available_flags}" -- ${cur}))
+                ;;
+        esac
+    else
+        # Autocompletar servicios después de comandos y flags
+        case "$command" in
+            x|sh|bash|logs|l|l100|l300|l500|start|stop|restart|up|u|ul|down|d|build|b)
+                # Solo completar servicios si no estamos completando un flag
+                if [[ "$prev" != -* ]] || [[ "$has_flags" == true ]]; then
+                    local services=$(_get_compose_services)
+                    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+                fi
+                ;;
+        esac
+    fi
+}
+
+# Autocompletado para funciones quick
+_dq_completion() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local containers=$(_get_docker_containers)
     COMPREPLY=($(compgen -W "${containers}" -- ${cur}))
 }
 
-# Autocompletado para comandos docker compose exec
-_docker_compose_exec_completion() {
+_dcq_completion() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local services=$(_get_compose_services)
     COMPREPLY=($(compgen -W "${services}" -- ${cur}))
 }
 
-# Autocompletado para comandos docker generales (contenedores)
-_docker_containers_completion() {
+_dcdown_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local services=$(_get_compose_services)
+    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+}
+
+_dcl_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local services=$(_get_compose_services)
+    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+}
+
+_dcx_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local services=$(_get_compose_services)
+    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+}
+
+_dx_completion() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local containers=$(_get_docker_containers)
     COMPREPLY=($(compgen -W "${containers}" -- ${cur}))
 }
 
-# Autocompletado para comandos docker compose generales (servicios)
-_docker_compose_services_completion() {
+_dl_completion() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local services=$(_get_compose_services)
-    COMPREPLY=($(compgen -W "${services}" -- ${cur}))
+    local containers=$(_get_docker_containers)
+    COMPREPLY=($(compgen -W "${containers}" -- ${cur}))
 }
 
-# Registrar autocompletado para alias de docker exec
-complete -F _docker_exec_completion dex
-complete -F _docker_exec_completion dexsh
-complete -F _docker_exec_completion dexbash
+# Registrar autocompletados para funciones principales
+complete -F _d_completion d
+complete -F _dc_completion dc
+complete -F _dq_completion dq
+complete -F _dcq_completion dcq
 
-# Registrar autocompletado para alias de docker compose exec
-complete -F _docker_compose_exec_completion dcex
-complete -F _docker_compose_exec_completion dcexsh
-complete -F _docker_compose_exec_completion dcexbash
-
-# Registrar autocompletado para otros alias de docker
-complete -F _docker_containers_completion dl
-complete -F _docker_containers_completion dlt
-complete -F _docker_containers_completion dlt300
-complete -F _docker_containers_completion dlt500
-complete -F _docker_containers_completion drm
-complete -F _docker_containers_completion dstop
-complete -F _docker_containers_completion dstart
-complete -F _docker_containers_completion drestart
-complete -F _docker_containers_completion dinspect
-
-# Registrar autocompletado para otros alias de docker compose
-complete -F _docker_compose_services_completion dcl
-complete -F _docker_compose_services_completion dclt
-complete -F _docker_compose_services_completion dclt300
-complete -F _docker_compose_services_completion dclt500
-complete -F _docker_compose_services_completion dcstop
-complete -F _docker_compose_services_completion dcstart
-complete -F _docker_compose_services_completion dcrestart
+# Registrar autocompletados para aliases específicos
+complete -F _dc_completion dcup
+complete -F _dcdown_completion dcdown
+complete -F _dcl_completion dcl
+complete -F _dcx_completion dcx
+complete -F _dx_completion dx
+complete -F _dl_completion dl
 
 # ==============================================================
-# Funciones auxiliares adicionales
+# Funciones de Ayuda
 # ==============================================================
 
-# Función para mostrar ayuda de los alias
-docker_aliases_help() {
-    echo "=== Docker Aliases ==="
-    echo "dps          - docker ps con colores"
-    echo "dps1         - docker ps formato compacto"
-    echo "dpsports     - docker ps mostrando puertos"
-    echo "di           - docker images con colores"
-    echo "ds/ds1       - docker stats (continuo/una vez)"
-    echo "dl           - docker logs -f"
-    echo "dlt/dlt300/dlt500 - docker logs con tail"
-    echo "dex          - docker exec -it"
-    echo "dexsh/dexbash - docker exec con shell específico"
-    echo "drm/drmi     - docker rm/rmi"
-    echo "dstop/dstart/drestart - control de contenedores"
-    echo ""
-    echo "=== Docker Compose Aliases ==="
-    echo "dc           - docker compose"
-    echo "dcup [-pfl]  - docker compose up con opciones"
-    echo "dcps/dcps1/dcpsports - docker compose ps variantes"
-    echo "dcs/dcs1     - docker compose stats"
-    echo "dcl/dclt     - docker compose logs"
-    echo "dcex         - docker compose exec"
-    echo "dcexsh/dcexbash - docker compose exec con shell"
-    echo "dcdown/dcstop/dcstart/dcrestart - control de servicios"
-    echo "dcpull/dcbuild - docker compose pull/build"
+_docker_help() {
+    cat << 'EOF'
+🐳 Docker Helper (d)
+
+BÁSICOS:
+  d ps, d p          - Lista contenedores
+  d ps1, d p1        - Lista formato compacto
+  d psp              - Lista con puertos
+  d images, d i      - Lista imágenes
+
+LOGS & STATS:
+  d logs, d l        - Logs en tiempo real
+  d l100/l300/l500   - Logs con tail
+  d stats, d s       - Stats en tiempo real
+  d s1               - Stats una vez
+
+EXEC:
+  d x CONTAINER CMD  - Ejecutar comando
+  d sh CONTAINER     - Shell sh
+  d bash CONTAINER   - Shell bash
+
+CONTROL:
+  d start/stop/restart CONTAINER
+  d rm/rmi           - Eliminar contenedor/imagen
+  d kill             - Matar contenedor
+
+LIMPIEZA:
+  d prune            - Limpiar sistema
+  d prunea           - Limpiar todo (aggressive)
+
+QUICK:
+  dq PATTERN CMD     - Ejecutar en primer contenedor que coincida
+  dstatus            - Estado rápido
+  dcleanup           - Limpieza completa
+
+Ejemplos:
+  d x web bash       - Bash en contenedor 'web'
+  dq nginx ls        - ls en primer contenedor que contenga 'nginx'
+EOF
 }
 
-# Alias para la ayuda
-alias dhelp='docker_aliases_help'
+_compose_help() {
+    cat << 'EOF'
+🐙 Docker Compose Helper (c)
+
+BÁSICOS:
+  dc up, dc u          - Levantar servicios
+  dc up -p            - Up con pull
+  dc up -f            - Up forzando recreación
+  dc up -b            - Up con build
+  dc ul               - Up + logs automáticos
+  dc down, dc d        - Bajar servicios
+
+ESTADO:
+  dc ps, dc p          - Lista servicios
+  dc ps1, dc p1        - Lista formato compacto
+  dc psp              - Lista con puertos
+
+LOGS & STATS:
+  dc logs, dc l        - Logs en tiempo real
+  dc l100/l300/l500   - Logs con tail
+  dc stats, dc s       - Stats en tiempo real
+
+EXEC:
+  dc x SERVICE CMD    - Ejecutar comando
+  dc sh SERVICE       - Shell sh
+  dc bash SERVICE     - Shell bash
+
+CONTROL:
+  dc start/stop/restart SERVICE
+  dc build, dc b       - Build servicios
+  dc pull             - Pull imágenes
+
+QUICK:
+  dcq PATTERN CMD    - Ejecutar en primer servicio que coincida
+
+Ejemplos:
+  dc x api bash      - Bash en servicio 'api'
+  dc ul web          - Up web service + logs
+  dc up -fl          - Up forzando recreación + logs
+  dc up -pl          - Up con pull + logs
+  dcq data psql      - psql en primer servicio que contenga 'data'
+EOF
+}
+
+# ==============================================================
+# Alias de ayuda
+# ==============================================================
+alias dhelp='_docker_help'
+alias dchelp='_compose_help'
+alias dockerhelp='echo "Usa: dhelp (docker) o dchelp (compose)"'

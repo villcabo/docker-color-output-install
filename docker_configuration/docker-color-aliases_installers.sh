@@ -28,12 +28,36 @@ usage() {
     echo "Usage: $0 [options]"
     echo "Options:"
     echo "  -u, --url URL    Custom URL for docker color settings file"
+    echo "  -v, --version VERSION  Version to install: v1 or v2 (default: v2)"
     echo "  -h, --help       Display this help message"
 }
+
+# Default version
+VERSION="v2"
 
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        -u|--url)
+            if [[ -n "$2" ]]; then
+                DOWNLOAD_URL="$2"
+                shift
+            else
+                echo -e "${RED}${BOLD}➔ Missing URL after $1${NORMAL}"
+                usage
+                exit 1
+            fi
+            ;;
+        -v|--version)
+            if [[ "$2" == "v1" || "$2" == "v2" ]]; then
+                VERSION="$2"
+                shift
+            else
+                echo -e "${RED}${BOLD}➔ Invalid version: $2. Use v1 or v2.${NORMAL}"
+                usage
+                exit 1
+            fi
+            ;;
         -h|--help)
             usage
             exit 0
@@ -44,10 +68,19 @@ while [[ $# -gt 0 ]]; do
             exit 1
             ;;
     esac
+    shift
 done
 
 # Set default download URL if not specified
-DOWNLOAD_URL=$GITHUB_RAW_URL
+if [[ -z "$DOWNLOAD_URL" ]]; then
+    if [[ "$VERSION" == "v1" ]]; then
+        SETTINGS_FILE_PATH="docker-color_aliases_v1.sh"
+    else
+        SETTINGS_FILE_PATH="docker-color_aliases_v2.sh"
+    fi
+    GITHUB_RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/docker_configuration/${SETTINGS_FILE_PATH}"
+    DOWNLOAD_URL=$GITHUB_RAW_URL
+fi
 
 # Start installation process
 echo -e "${BOLD}➔ Setting up Docker Color Output settings ⏳...${NORMAL}"
