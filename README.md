@@ -48,6 +48,11 @@ Para instalar las configuraciones de alias, ejecuta el siguiente comando:
 wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker_configuration/docker-color-aliases_installers.sh | bash
 ```
 
+For v1
+```bash
+wget -q -O - https://raw.githubusercontent.com/villcabo/docker-color-output/main/docker_configuration/docker-color-aliases_installers.sh | bash -s -- -v v1
+```
+
 **Con recarga de bash**
 
 ```bash
