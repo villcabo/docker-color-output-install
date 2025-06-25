@@ -126,12 +126,14 @@ alias di='d images'
 alias dl='d logs'
 alias dlt='d l100'
 alias dpri='d image prune'
+alias ds='d stats'
 
 alias dcup='dc up   '
 alias dcps='dc ps'
 alias dcl='dc logs'
 alias dclt='dc l100'
 alias dcdown='dc down'
+alias dcs='dc stats'
 
 # Exec shortcuts (muy comunes)
 alias dx='d x'
