@@ -62,17 +62,21 @@ dc() {
             local opts=""
             local show_logs=false
             while [[ $1 == -* ]]; do
-                case $1 in
-                    -p) opts+=" --pull always" ;;
-                    -f) opts+=" --force-recreate" ;;
-                    -b) opts+=" --build" ;;
-                    -l) show_logs=true ;;
-                esac
+                local flags="${1#-}"
+                for ((i=0; i<${#flags}; i++)); do
+                    case "${flags:$i:1}" in
+                        p) opts+=" --pull always" ;;
+                        f) opts+=" --force-recreate" ;;
+                        b) opts+=" --build" ;;
+                        l) show_logs=true ;;
+                    esac
+                done
                 shift
             done
-            eval "docker compose up -d$opts $*"
-            if [[ "$show_logs" == true ]]; then
-                docker compose logs -f "$@"
+            if eval "docker compose up -d$opts $*"; then
+                if [[ "$show_logs" == true ]]; then
+                    docker compose logs -f "$@"
+                fi
             fi
             ;;
 
