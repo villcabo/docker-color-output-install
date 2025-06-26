@@ -134,6 +134,7 @@ alias ds='d stats'
 
 alias dcup='dc up   '
 alias dcps='dc ps'
+alias dcps1='dc ps1'
 alias dcl='dc logs'
 alias dclt='dc l100'
 alias dcdown='dc down'
