@@ -136,7 +136,6 @@ alias dcup='dc up   '
 alias dcps='dc ps'
 alias dcps1='dc ps1'
 alias dcl='dc logs'
-alias dclt='dc l100'
 alias dcdown='dc down'
 alias dcs='dc stats'
 
@@ -144,7 +143,7 @@ alias dcs='dc stats'
 alias dx='d x'
 alias dcx='dc x'
 
-# ==============================================================
+# ====================================================  ==========
 # Smart Functions - Funciones Inteligentes
 # ==============================================================
 
@@ -194,7 +193,6 @@ dstatus() {
 dcleanup() {
     echo "🧹 Limpiando Docker..."
     docker system prune -f
-    docker volume prune -f
     docker network prune -f
     echo "✅ Limpieza completada"
 }
@@ -450,3 +448,115 @@ EOF
 alias dhelp='_docker_help'
 alias dchelp='_compose_help'
 alias dockerhelp='echo "Usa: dhelp (docker) o dchelp (compose)"'
+
+# ==============================================================
+# Logs inteligentes con búsqueda y confirmación
+# ==============================================================
+dclt() {
+    local regex_mode=false
+    local ask_confirm=false
+    local pattern=""
+    local services
+    local matched_services=()
+    local arg
+
+    # Parse flags combinadas y argumentos
+    while [[ $# -gt 0 ]]; do
+        if [[ "$1" == --* ]]; then
+            case "$1" in
+                --regex)
+                    regex_mode=true
+                    ;;
+                --wait)
+                    ask_confirm=true
+                    ;;
+                *)
+                    echo "❌ Opción no reconocida: $1" >&2
+                    return 1
+                    ;;
+            esac
+        elif [[ "$1" == -* && "$1" != "-" ]]; then
+            local flags="${1#-}"
+            for ((i=0; i<${#flags}; i++)); do
+                case "${flags:$i:1}" in
+                    r) regex_mode=true ;;
+                    w) ask_confirm=true ;;
+                    *)
+                        echo "❌ Opción no reconocida: -${flags:$i:1}" >&2
+                        return 1
+                        ;;
+                esac
+            done
+        else
+            pattern="$1"
+        fi
+        shift
+    done
+
+    # Obtener lista de servicios
+    services=($(docker compose ps --services 2>/dev/null))
+    if [[ ${#services[@]} -eq 0 ]]; then
+        echo "❌ No se encontraron servicios de compose."
+        return 1
+    fi
+
+    # Buscar coincidencias
+    if [[ -n "$pattern" ]]; then
+        if [[ "$regex_mode" == true ]]; then
+            for svc in "${services[@]}"; do
+                if [[ "$svc" =~ $pattern ]]; then
+                    matched_services+=("$svc")
+                fi
+            done
+        else
+            for svc in "${services[@]}"; do
+                if [[ "$svc" == *$pattern* ]]; then
+                    matched_services+=("$svc")
+                fi
+            done
+        fi
+    else
+        matched_services=("${services[@]}")
+    fi
+
+    if [[ ${#matched_services[@]} -eq 0 ]]; then
+        echo "❌ No se encontraron servicios que coincidan con '$pattern'"
+        return 1
+    fi
+
+    echo "Servicios encontrados: ${matched_services[*]}"
+    if [[ "$ask_confirm" == true ]]; then
+        printf "¿Mostrar logs de estos servicios? [Y/n]: "
+        read resp
+        if [[ -z "$resp" || "$resp" =~ ^[Yy]$ ]]; then
+            : # continuar
+        else
+            return 0
+        fi
+    fi
+    docker compose logs --tail 100 -f "${matched_services[@]}"
+}
+
+# Alias para compatibilidad
+alias dclt='dclt'
+
+# ==============================================================
+# Autocompletado para dclt (bash y zsh)
+# ==============================================================
+_dclt_completion() {
+    local cur prev opts services
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="-r --regex -w --wait"
+    services=$(_get_compose_services)
+
+    # Completar flags
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+        return 0
+    fi
+    # Completar servicios
+    COMPREPLY=($(compgen -W "$services" -- "$cur"))
+}
+
+complete -F _dclt_completion dclt
