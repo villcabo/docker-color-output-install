@@ -132,7 +132,7 @@ alias dlt='d l100'
 alias dpri='d image prune'
 alias ds='d stats'
 
-alias dcup='dc up   '
+alias dcup='dc up'
 alias dcps='dc ps'
 alias dcps1='dc ps1'
 alias dcl='dc logs'
@@ -346,6 +346,44 @@ _dl_completion() {
     COMPREPLY=($(compgen -W "${containers}" -- ${cur}))
 }
 
+# Autocompletado específico para dcup (igual a dc up)
+_dcup_completion() {
+    local cur prev has_flags
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    has_flags=false
+
+    # Verificar si ya hay flags en la línea de comando
+    for ((i=1; i<COMP_CWORD; i++)); do
+        if [[ "${COMP_WORDS[i]}" == -* ]]; then
+            has_flags=true
+            break
+        fi
+    done
+
+    if [[ "$cur" == -* ]]; then
+        # Autocompletar flags para up
+        local flags="-p -l -f -b"
+        local used_flags=""
+        for ((i=1; i<COMP_CWORD; i++)); do
+            if [[ "${COMP_WORDS[i]}" == -* ]]; then
+                used_flags+="${COMP_WORDS[i]} "
+            fi
+        done
+        local available_flags=""
+        for flag in $flags; do
+            if [[ ! "$used_flags" =~ $flag ]]; then
+                available_flags+="$flag "
+            fi
+        done
+        COMPREPLY=( $(compgen -W "$available_flags" -- "$cur") )
+    else
+        # Autocompletar servicios después de flags
+        local services=$(_get_compose_services)
+        COMPREPLY=( $(compgen -W "$services" -- "$cur") )
+    fi
+}
+
 # Registrar autocompletados para funciones principales
 complete -F _d_completion d
 complete -F _dc_completion dc
@@ -353,7 +391,7 @@ complete -F _dq_completion dq
 complete -F _dcq_completion dcq
 
 # Registrar autocompletados para aliases específicos
-complete -F _dc_completion dcup
+complete -F _dcup_completion dcup
 complete -F _dcdown_completion dcdown
 complete -F _dcl_completion dcl
 complete -F _dcx_completion dcx
@@ -584,3 +622,26 @@ _dclt_completion() {
 }
 
 complete -F _dclt_completion dclt
+
+# ==============================================================
+# Mostrar git.properties desde un contenedor de compose
+# ==============================================================
+dcpr() {
+    local service="$1"
+    if [[ -z "$service" ]]; then
+        echo "Uso: dcpr <servicio>"
+        return 1
+    fi
+    # Buscar el archivo en ambos paths
+    docker compose exec "$service" sh -c 'if [ -f /app/resources/git.properties ]; then cat /app/resources/git.properties; elif [ -f /usr/share/nginx/html/git.properties ]; then cat /usr/share/nginx/html/git.properties; else echo "❌ git.properties no encontrado"; fi'
+}
+
+# Autocompletado para dcpr (servicios de compose)
+_dcpr_completion() {
+    local cur services
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    services=$(_get_compose_services)
+    COMPREPLY=( $(compgen -W "$services" -- "$cur") )
+}
+
+complete -F _dcpr_completion dcpr
