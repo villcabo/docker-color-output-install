@@ -206,8 +206,15 @@ _get_docker_containers() {
 }
 
 _get_compose_services() {
-    if [[ -f docker-compose.yml ]] || [[ -f docker-compose.yaml ]] || [[ -f compose.yml ]] || [[ -f compose.yaml ]]; then
-        docker compose ps --services 2>/dev/null
+    # Prioridad: docker-compose.yml > docker-compose.yaml > compose.yml > compose.yaml
+    if [[ -f docker-compose.yml ]]; then
+        docker compose config --services 2>/dev/null
+    elif [[ -f docker-compose.yaml ]]; then
+        docker compose -f docker-compose.yaml config --services 2>/dev/null
+    elif [[ -f compose.yml ]]; then
+        docker compose -f compose.yml config --services 2>/dev/null
+    elif [[ -f compose.yaml ]]; then
+        docker compose -f compose.yaml config --services 2>/dev/null
     fi
 }
 
@@ -455,7 +462,7 @@ alias dockerhelp='echo "Usa: dhelp (docker) o dchelp (compose)"'
 dclt() {
     local regex_mode=false
     local ask_confirm=false
-    local pattern=""
+    local patterns=()
     local services
     local matched_services=()
     local arg
@@ -488,43 +495,63 @@ dclt() {
                 esac
             done
         else
-            pattern="$1"
+            patterns+=("$1")
         fi
         shift
     done
 
     # Obtener lista de servicios
-    services=($(docker compose ps --services 2>/dev/null))
+    services=($(_get_compose_services))
     if [[ ${#services[@]} -eq 0 ]]; then
         echo "❌ No se encontraron servicios de compose."
         return 1
     fi
 
     # Buscar coincidencias
-    if [[ -n "$pattern" ]]; then
+    if [[ ${#patterns[@]} -gt 0 ]]; then
         if [[ "$regex_mode" == true ]]; then
             for svc in "${services[@]}"; do
-                if [[ "$svc" =~ $pattern ]]; then
-                    matched_services+=("$svc")
-                fi
+                for pat in "${patterns[@]}"; do
+                    if [[ "$svc" =~ $pat ]]; then
+                        matched_services+=("$svc")
+                        break
+                    fi
+                done
             done
         else
-            for svc in "${services[@]}"; do
-                if [[ "$svc" == *$pattern* ]]; then
-                    matched_services+=("$svc")
-                fi
+            for pat in "${patterns[@]}"; do
+                for svc in "${services[@]}"; do
+                    if [[ "$svc" == "$pat" ]]; then
+                        matched_services+=("$svc")
+                    fi
+                done
             done
         fi
     else
         matched_services=("${services[@]}")
     fi
 
-    if [[ ${#matched_services[@]} -eq 0 ]]; then
-        echo "❌ No se encontraron servicios que coincidan con '$pattern'"
+    # Eliminar duplicados (compatible con bash y zsh)
+    local unique_services=()
+    for svc in "${matched_services[@]}"; do
+        local found=false
+        for usvc in "${unique_services[@]}"; do
+            if [[ "$svc" == "$usvc" ]]; then
+                found=true
+                break
+            fi
+        done
+        if [[ "$found" == false ]]; then
+            unique_services+=("$svc")
+        fi
+    done
+
+    if [[ ${#unique_services[@]} -eq 0 ]]; then
+        echo "❌ No se encontraron servicios que coincidan con '${patterns[*]}'"
         return 1
     fi
 
-    echo "Servicios encontrados: ${matched_services[*]}"
+    echo "Servicios encontrados: ${unique_services[*]}"
     if [[ "$ask_confirm" == true ]]; then
         printf "¿Mostrar logs de estos servicios? [Y/n]: "
         read resp
@@ -534,11 +561,8 @@ dclt() {
             return 0
         fi
     fi
-    docker compose logs --tail 100 -f "${matched_services[@]}"
+    docker compose logs --tail 100 -f "${unique_services[@]}"
 }
-
-# Alias para compatibilidad
-alias dclt='dclt'
 
 # ==============================================================
 # Autocompletado para dclt (bash y zsh)
