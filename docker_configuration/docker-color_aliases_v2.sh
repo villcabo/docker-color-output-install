@@ -627,12 +627,105 @@ complete -F _dclt_completion dclt
 # Mostrar git.properties desde un contenedor de compose
 # ==============================================================
 dcpr() {
-    local service="$1"
-    if [[ -z "$service" ]]; then
-        echo "Uso: dcpr <servicio>"
+    local show_all=false show_summary=false
+    local services=() service
+    # Parse flags y argumentos
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -a)
+                show_all=true
+                ;;
+            -s)
+                show_summary=true
+                ;;
+            -as|-sa)
+                show_all=true; show_summary=true
+                ;;
+            --all)
+                show_all=true
+                ;;
+            --summary)
+                show_summary=true
+                ;;
+            --)
+                shift; break
+                ;;
+            -*)
+                echo "❌ Opción no reconocida: $1" >&2
+                return 1
+                ;;
+            *)
+                services+=("$1")
+                ;;
+        esac
+        shift
+    done
+
+    if [[ "$show_all" == true ]]; then
+        local all_services=($(_get_compose_services))
+        if [[ ${#all_services[@]} -eq 0 ]]; then
+            echo "❌ No se encontraron servicios de compose."
+            return 1
+        fi
+        if [[ "$show_summary" == true ]]; then
+            printf "Procesando servicios...\n" >&2
+            # 1. Recolectar filas y calcular anchos máximos
+            local -a rows
+            local max_service=12 max_commit=9 max_email=9 max_branch=6 max_msg=13
+            for svc in "${all_services[@]}"; do
+                printf "Procesando: %s\r" "$svc" >&2
+                local props=$(docker compose exec "$svc" sh -c 'if [ -f /app/resources/git.properties ]; then cat /app/resources/git.properties; elif [ -f /usr/share/nginx/html/git.properties ]; then cat /usr/share/nginx/html/git.properties; fi' 2>/dev/null)
+                if [[ -z "$props" ]]; then
+                    continue
+                fi
+                local branch commit_id user_email commit_msg
+                commit_id=$(echo "$props" | grep -E '^git\.commit.id=' | head -1 | cut -d= -f2-)
+                user_email=$(echo "$props" | grep -E '^git\.commit.user.email=' | head -1 | cut -d= -f2-)
+                branch=$(echo "$props" | grep -E '^git\.branch=' | head -1 | cut -d= -f2-)
+                commit_msg=$(echo "$props" | grep -E '^git\.commit.message.full=' | head -1 | cut -d= -f2-)
+                if [[ -z "$commit_msg" ]]; then
+                    commit_msg=$(echo "$props" | grep -E '^git\.commit.message.short=' | head -1 | cut -d= -f2-)
+                fi
+                commit_msg=$(echo "$commit_msg" | tr '\n' ' ' | tr -s ' ')
+                # Guardar fila y calcular anchos
+                rows+=("$svc|$commit_id|$user_email|$branch|$commit_msg")
+                (( ${#svc} > max_service )) && max_service=${#svc}
+                (( ${#commit_id} > max_commit )) && max_commit=${#commit_id}
+                (( ${#user_email} > max_email )) && max_email=${#user_email}
+                (( ${#branch} > max_branch )) && max_branch=${#branch}
+                (( ${#commit_msg} > max_msg )) && max_msg=${#commit_msg}
+            done
+            # Limitar ancho máximo de commit_msg
+            (( max_msg > 40 )) && max_msg=40
+            # 2. Imprimir cabecera
+            printf "%-${max_service}s | %- ${max_commit}s | %- ${max_email}s | %- ${max_branch}s | %- ${max_msg}s\n" "SERVICE_NAME" "COMMIT_ID" "USER_EMAIL" "BRANCH" "COMMIT_MESSAGE"
+            local total_width=$((max_service+max_commit+max_email+max_branch+max_msg+13))
+            printf -- '%*s\n' "$total_width" '' | tr ' ' '-'
+            # 3. Imprimir filas
+            for row in "${rows[@]}"; do
+                IFS='|' read -r svc commit_id user_email branch commit_msg <<< "$row"
+                # Truncar commit_msg si es necesario
+                [[ ${#commit_msg} -gt $max_msg ]] && commit_msg="${commit_msg:0:max_msg}"
+                printf "%-${max_service}s | %- ${max_commit}s | %- ${max_email}s | %- ${max_branch}s | %- ${max_msg}s\n" "$svc" "$commit_id" "$user_email" "$branch" "$commit_msg"
+            done
+            printf "\n" >&2
+        else
+            # Mostrar todos los git.properties completos
+            for svc in "${all_services[@]}"; do
+                echo "# $svc"
+                docker compose exec "$svc" sh -c 'if [ -f /app/resources/git.properties ]; then cat /app/resources/git.properties; elif [ -f /usr/share/nginx/html/git.properties ]; then cat /usr/share/nginx/html/git.properties; else echo "❌ git.properties no encontrado"; fi'
+                echo
+            done
+        fi
+        return 0
+    fi
+
+    # Caso simple: un solo servicio
+    if [[ ${#services[@]} -eq 0 ]]; then
+        echo "Uso: dcpr <servicio> | dcpr -a | dcpr -a -s"
         return 1
     fi
-    # Buscar el archivo en ambos paths
+    service="${services[0]}"
     docker compose exec "$service" sh -c 'if [ -f /app/resources/git.properties ]; then cat /app/resources/git.properties; elif [ -f /usr/share/nginx/html/git.properties ]; then cat /usr/share/nginx/html/git.properties; else echo "❌ git.properties no encontrado"; fi'
 }
 
