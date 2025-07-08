@@ -696,10 +696,11 @@ dcpr() {
                 (( ${#commit_msg} > max_msg )) && max_msg=${#commit_msg}
             done
             # Limitar ancho máximo de commit_msg
-            (( max_msg > 40 )) && max_msg=40
-            # 2. Imprimir cabecera
-            printf "%-${max_service}s | %- ${max_commit}s | %- ${max_email}s | %- ${max_branch}s | %- ${max_msg}s\n" "SERVICE_NAME" "COMMIT_ID" "USER_EMAIL" "BRANCH" "COMMIT_MESSAGE"
+            (( max_msg > 60 )) && max_msg=60
+            # 2. Imprimir cabecera con líneas arriba y abajo
             local total_width=$((max_service+max_commit+max_email+max_branch+max_msg+13))
+            printf -- '%*s\n' "$total_width" '' | tr ' ' '-'
+            printf "%-${max_service}s | %- ${max_commit}s | %- ${max_email}s | %- ${max_branch}s | %- ${max_msg}s\n" "SERVICE_NAME" "COMMIT_ID" "USER_EMAIL" "BRANCH" "COMMIT_MESSAGE"
             printf -- '%*s\n' "$total_width" '' | tr ' ' '-'
             # 3. Imprimir filas
             for row in "${rows[@]}"; do
