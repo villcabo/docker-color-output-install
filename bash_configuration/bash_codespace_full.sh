@@ -179,6 +179,7 @@ alias myiplocal='hostname -I | awk "{print \$1}"'                              #
 alias clearhistory='history -c && history -w'                                  # Clear history
 alias path='echo -e ${PATH//:/\\n}'                                            # Shows PATH in separate lines
 alias weather='curl wttr.in'                                                   # Shows current weather (requires internet connection)
+alias reloadbash='source ~/.bashrc && echo "Bash configuration reloaded"'      # Reload bash configuration
 
 # Function to easily extract compressed files
 extract() {
