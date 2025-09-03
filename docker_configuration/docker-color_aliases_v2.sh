@@ -104,10 +104,10 @@ dc() {
                 echo -e "\033[1;36mAdditional action:\033[0m Show logs after up"
             fi
             echo ""
-            printf "\033[1;31mContinue with operation? [y/N]: \033[0m"
+            printf "\033[1;31mContinue with operation? [yes/N]: \033[0m"
             read -r response
 
-            if [[ "$response" =~ ^[Yy]$ ]]; then
+            if [[ "$response" == "yes" ]]; then
                 local cmd="docker compose up -d$opts"
                 if [[ ${#services[@]} -gt 0 ]]; then
                     cmd+=" ${services[*]}"
@@ -225,11 +225,24 @@ dcup() {
         echo -e "\033[1;36mAdditional action:\033[0m Show logs after up"
     fi
     echo ""
-    printf "\033[1;31mContinue with operation? [y/N]: \033[0m"
+    printf "\033[1;31mContinue with operation? [yes/N]: \033[0m"
     read -r response
 
-    if [[ "$response" =~ ^[Yy]$ ]]; then
-        dc up "$@"
+    if [[ "$response" == "yes" ]]; then
+        local cmd="docker compose up -d$opts"
+        if [[ ${#services[@]} -gt 0 ]]; then
+            cmd+=" ${services[*]}"
+        fi
+
+        if eval "$cmd"; then
+            if [[ "$show_logs" == true ]]; then
+                if [[ ${#services[@]} -gt 0 ]]; then
+                    docker compose logs -f "${services[@]}"
+                else
+                    docker compose logs -f
+                fi
+            fi
+        fi
     else
         echo -e "\033[1;33mOperation cancelled.\033[0m"
         return 1
@@ -694,9 +707,9 @@ dclt() {
 
     echo "Services found: ${unique_services[*]}"
     if [[ "$ask_confirm" == true ]]; then
-        printf "Show logs for these services? [Y/n]: "
+        printf "Show logs for these services? [yes/N]: "
         read resp
-        if [[ -z "$resp" || "$resp" =~ ^[Yy]$ ]]; then
+        if [[ "$resp" == "yes" ]]; then
             : # continue
         else
             return 0
